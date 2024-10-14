@@ -3,7 +3,39 @@
 @page "/"
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
+@inject NavigationManager NavigationManager
 
 <AuthorizeView>
-    Hello @context.User.Identity?.Name!
+    <Authorized>
+        Hello @context.User.Identity?.Name!
+        <div>
+            <a href="Account/Manage">Profile</a>
+        </div>
+        <form action="Account/Logout" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <button type="submit">Logout</button>
+        </form>
+    </Authorized>
 </AuthorizeView>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
