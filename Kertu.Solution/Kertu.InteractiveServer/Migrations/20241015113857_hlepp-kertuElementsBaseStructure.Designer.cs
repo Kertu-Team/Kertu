@@ -3,6 +3,7 @@ using System;
 using Kertu.InteractiveServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kertu.InteractiveServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241015113857_hlepp-kertuElementsBaseStructure")]
+    partial class hleppkertuElementsBaseStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,12 +100,6 @@ namespace Kertu.InteractiveServer.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
-                    b.Property<int?>("KertuBoardId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("KertuBoardId1")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -116,15 +113,9 @@ namespace Kertu.InteractiveServer.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("KertuBoardId");
-
-                    b.HasIndex("KertuBoardId1");
-
                     b.ToTable("KertuElements");
 
                     b.HasDiscriminator<string>("type").HasValue("KertuElement");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -259,50 +250,11 @@ namespace Kertu.InteractiveServer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuBoard", b =>
-                {
-                    b.HasBaseType("Kertu.InteractiveServer.Data.KertuElement");
-
-                    b.HasDiscriminator().HasValue("KertuBoard");
-                });
-
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuCard", b =>
-                {
-                    b.HasBaseType("Kertu.InteractiveServer.Data.KertuElement");
-
-                    b.Property<int?>("KertuListId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("KertuListId1")
-                        .HasColumnType("integer");
-
-                    b.HasIndex("KertuListId");
-
-                    b.HasIndex("KertuListId1");
-
-                    b.HasDiscriminator().HasValue("KertuCard");
-                });
-
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuList", b =>
-                {
-                    b.HasBaseType("Kertu.InteractiveServer.Data.KertuElement");
-
-                    b.HasDiscriminator().HasValue("KertuList");
-                });
-
             modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElement", b =>
                 {
                     b.HasOne("Kertu.InteractiveServer.Data.ApplicationUser", null)
                         .WithMany("userKertuElements")
                         .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("Kertu.InteractiveServer.Data.KertuElements.KertuBoard", null)
-                        .WithMany("ChildKertuElements")
-                        .HasForeignKey("KertuBoardId");
-
-                    b.HasOne("Kertu.InteractiveServer.Data.KertuElements.KertuBoard", null)
-                        .WithMany()
-                        .HasForeignKey("KertuBoardId1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -356,30 +308,9 @@ namespace Kertu.InteractiveServer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuCard", b =>
-                {
-                    b.HasOne("Kertu.InteractiveServer.Data.KertuElements.KertuList", null)
-                        .WithMany("ChildCards")
-                        .HasForeignKey("KertuListId");
-
-                    b.HasOne("Kertu.InteractiveServer.Data.KertuElements.KertuList", null)
-                        .WithMany()
-                        .HasForeignKey("KertuListId1");
-                });
-
             modelBuilder.Entity("Kertu.InteractiveServer.Data.ApplicationUser", b =>
                 {
                     b.Navigation("userKertuElements");
-                });
-
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuBoard", b =>
-                {
-                    b.Navigation("ChildKertuElements");
-                });
-
-            modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElements.KertuList", b =>
-                {
-                    b.Navigation("ChildCards");
                 });
 #pragma warning restore 612, 618
         }

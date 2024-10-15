@@ -1,10 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<RadzenComponents @rendermode="InteractiveServer" />
+
+<RadzenStack JustifyContent="JustifyContent.Left" Orientation="Orientation.Horizontal" class="page">
+    <div class="sidebar">
+        <TreeViewNavigationPanel />
+    </div>
+    @Body
+
+</RadzenStack>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<RadzenComponents @rendermode="InteractiveServer" />

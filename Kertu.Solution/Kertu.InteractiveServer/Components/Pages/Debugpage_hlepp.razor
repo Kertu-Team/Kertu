@@ -1,0 +1,76 @@
+﻿@page "/hleppdebug"
+@attribute [Authorize]
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Kertu.InteractiveServer.Data;
+@using Kertu.InteractiveServer.Data.KertuElements;
+
+@inject ApplicationDbContext dbContext
+@inject UserManager<ApplicationUser> UserManager
+@inject Account.IdentityUserAccessor UserAccessor
+@inject IHttpContextAccessor httpContextAccessor
+
+<h3>hlepp_debugpage</h3>
+
+<RadzenButton Text="KLIK" Click="@click"></RadzenButton>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    ApplicationUser currentUser;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HttpContext = httpContextAccessor.HttpContext;
+        currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    }
+
+    void click()
+    {
+        KertuBoard board1 = new KertuBoard();
+        board1.Name = "Board1";
+        KertuBoard board2 = new KertuBoard();
+        board2.Name = "Board2";
+        KertuCard card1 = new KertuCard();
+        card1.Name = "Card1";
+        KertuCard card2 = new KertuCard();
+        card2.Name = "Card2";
+        KertuCard card3 = new KertuCard();
+        card3.Name = "Card3";
+        KertuCard card4 = new KertuCard();
+        card4.Name = "Card4";
+        KertuCard card5 = new KertuCard();
+        card5.Name = "Card5";
+        KertuCard card6 = new KertuCard();
+        card6.Name = "Card6";
+        KertuCard card7 = new KertuCard();
+        card7.Name = "Card7";
+        KertuList list1 = new KertuList();
+        list1.Name = "List1";
+        KertuList list2 = new KertuList();
+        list2.Name = "List2";
+        KertuList list3 = new KertuList();
+        list3.Name = "List3";
+
+
+        board1.ChildKertuElements.Add(card1);
+        board1.ChildKertuElements.Add(card2);
+        board1.ChildKertuElements.Add(list1);
+        board1.ChildKertuElements.Add(board2);
+        list1.ChildCards.Add(card3);
+        list1.ChildCards.Add(card4);
+        board2.ChildKertuElements.Add(card5);
+        board2.ChildKertuElements.Add(list2);
+        board2.ChildKertuElements.Add(list3);
+        list3.ChildCards.Add(card6);
+
+        currentUser.userKertuElements.Add(board1);
+        currentUser.userKertuElements.Add(card7);
+
+        dbContext.SaveChanges();
+    }
+}
