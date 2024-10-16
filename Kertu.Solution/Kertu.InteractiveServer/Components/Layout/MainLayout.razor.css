@@ -1,3 +1,14 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
