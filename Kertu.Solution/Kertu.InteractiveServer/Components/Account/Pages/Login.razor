@@ -12,60 +12,54 @@
 
 <PageTitle>Log in</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+<div class="w-100 vh-100 d-flex align-items-center justify-content-center">
+    <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
+        <div class="rz-login">
+            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" class="rz-form">
                 <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+
+                <RadzenAlert Visible=@(!string.IsNullOrEmpty(errorMessage)) AlertStyle="AlertStyle.Danger" ShowIcon="false" AllowClose="false" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    @errorMessage
+                </RadzenAlert>
+
+                <div class="rz-form-row">
+                    <label for="email" class="rz-label">Email</label>
+                    <div class="rz-form-input-wrapper">
+                        <InputText @bind-Value="Input.Email" class="rz-textbox" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <ValidationMessage For="() => Input.Email" class="text-danger" />
+                    </div>
                 </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+
+                <div class="rz-form-row">
+                    <label for="password" class="rz-label">Password</label>
+                    <div class="rz-form-input-wrapper">
+                        <InputText type="password" @bind-Value="Input.Password" class="rz-textbox" autocomplete="current-password" aria-required="true" placeholder="password" />
+
+                        <ValidationMessage For="() => Input.Password" class="text-danger" />
+                    </div>
                 </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
+
+                <div class="rz-form-row">
+                    <label class="rz-label"></label>
+                    <div class="rz-form-input-wrapper rz-login-buttons">
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Text="Login" />
+                        <a href="Account/ForgotPassword" tabindex="0" class="rz-link">Forgot password?</a>
+                    </div>
                 </div>
             </EditForm>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
 
+            <div class="rz-register">
+                Don't have an account yet?
+
+                <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
+                    <RadzenButton ButtonType="ButtonType.Button" Variant="Variant.Flat" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="Sign Up" />
+                </a>
+            </div>
+        </div>
+    </RadzenCard>
+</div>
 @code {
-    private string? errorMessage;
+    string errorMessage = string.Empty;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;

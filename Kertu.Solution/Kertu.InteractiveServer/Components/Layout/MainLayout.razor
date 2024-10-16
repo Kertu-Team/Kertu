@@ -3,9 +3,11 @@
 <RadzenComponents @rendermode="InteractiveServer" />
 
 <RadzenStack JustifyContent="JustifyContent.Left" Orientation="Orientation.Horizontal" class="page">
-    <div class="sidebar">
-        <TreeViewNavigationPanel />
-    </div>
+    <AuthorizeView>
+        <div class="sidebar">
+            <TreeViewNavigationPanel />
+        </div>
+    </AuthorizeView>
     @Body
 
 </RadzenStack>
