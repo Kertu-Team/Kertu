@@ -2,15 +2,46 @@
 
 <RadzenComponents @rendermode="InteractiveServer" />
 
-<RadzenStack JustifyContent="JustifyContent.Left" Orientation="Orientation.Horizontal" class="page">
-    <AuthorizeView>
-        <div class="sidebar">
-            <TreeViewNavigationPanel />
-        </div>
-    </AuthorizeView>
-    @Body
+@inject NavigationManager Navigation
 
-</RadzenStack>
+<RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
+
+            @if (!IsAccountRoute)
+            {
+                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            }
+            else
+            {
+                <!-- Filler element to maintain layout consistency -->
+                <div style="width: 22px" />
+            }
+
+            <RadzenIcon Icon="Favorite" />
+
+            <RadzenLabel Text="Kertu" />
+        </RadzenStack>
+    </RadzenHeader>
+
+    @if (sidebarExpanded)
+    {
+        <RadzenSidebar>
+            <TreeViewNavigationPanel />
+        </RadzenSidebar>
+    }
+
+    <RadzenBody>
+        <div class="rz-p-4 h-100">
+            @Body
+        </div>
+    </RadzenBody>
+</RadzenLayout>
+
+@code {
+    bool sidebarExpanded = false;
+    bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
+}
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
