@@ -1,4 +1,4 @@
-# test
+# test 2
 # How to run project for development purposes
 
 1. Open terminal in the project root directory
