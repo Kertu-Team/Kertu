@@ -4,7 +4,7 @@
 2. Run the following command:
 
 ```bash
-docker-compose up postgres
+docker-compose up postgres -d
 ```
 
 3. In visual studio, run the project with debug mode and http profile
@@ -14,5 +14,5 @@ docker-compose up postgres
 If you need to rebuild the container, run the following command:
 
 ```bash
-docker-compose up --build postgres
+docker-compose up --build postgres -d
 ```

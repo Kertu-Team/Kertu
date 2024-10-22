@@ -5,7 +5,20 @@
         </RadzenText>
     </HeaderTemplate>
     <ChildContent>
+        <RadzenTree>
+            <RadzenTreeItem Text="Home">
+                <Template>
+                    <NavLink href="" Match="NavLinkMatch.All">Home</NavLink>
+                </Template>
+            </RadzenTreeItem>
 
+            <RadzenTreeItem Text="Task List">
+                <Template>
+                    <NavLink href="tasklist" Match="NavLinkMatch.All">Task List</NavLink>
+
+                </Template>
+            </RadzenTreeItem>
+        </RadzenTree>
     </ChildContent>
 </RadzenPanel>
 
