@@ -17,10 +17,10 @@
 
 <PageTitle>Register</PageTitle>
 
-<div class="w-100 h-100 d-flex justify-content-center align-items-center">
-    <RadzenCard class="rz-my-12 rz-p-4 rz-p-md-12" style="max-width: 400px; width: 100%;">
+<div class="w-100 h-100 d-flex align-items-center">
+    <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
         <div class="rz-login">
-            <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" class="rz-form w-100">
+            <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" class="rz-form">
                 <DataAnnotationsValidator />
 
                 <RadzenAlert Visible=@(!string.IsNullOrEmpty(Message)) AlertStyle="AlertStyle.Danger" ShowIcon="false" AllowClose="false" Variant="Variant.Flat" Shade="Shade.Lighter">
@@ -28,49 +28,50 @@
                 </RadzenAlert>
 
                 <!-- Email Field -->
-                <div class="rz-form-row w-100">
+                 <div class="rz-form-row">
                     <label for="email" class="rz-label">Email</label>
-                    <div class="rz-form-input-wrapper w-100">
-                        <InputText @bind-Value="Input.Email" class="rz-textbox w-100" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <div class="rz-form-input-wrapper">
+                        <InputText @bind-Value="Input.Email" class="rz-textbox" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                         <ValidationMessage For="() => Input.Email" class="text-danger" />
                     </div>
                 </div>
 
                 <!-- Password Field -->
-                <div class="rz-form-row w-100">
+                <div class="rz-form-row">
                     <label for="password" class="rz-label">Password</label>
-                    <div class="rz-form-input-wrapper w-100">
-                        <InputText type="password" @bind-Value="Input.Password" class="rz-textbox w-100" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <div class="rz-form-input-wrapper">
+                        <InputText type="password" @bind-Value="Input.Password" class="rz-textbox" autocomplete="new-password" aria-required="true" placeholder="password" />
                         <ValidationMessage For="() => Input.Password" class="text-danger" />
                     </div>
                 </div>
 
                 <!-- Confirm Password Field -->
-                <div class="rz-form-row w-100">
+                <div class="rz-form-row">
                     <label for="confirm-password" class="rz-label">Confirm Password</label>
-                    <div class="rz-form-input-wrapper w-100">
-                        <InputText type="password" @bind-Value="Input.ConfirmPassword" class="rz-textbox w-100" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <div class="rz-form-input-wrapper">
+                        <InputText type="password" @bind-Value="Input.ConfirmPassword" class="rz-textbox" autocomplete="new-password" aria-required="true" placeholder="password" />
                         <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
                     </div>
                 </div>
 
                 <!-- Register Button -->
-                <div class="rz-form-row w-100 d-flex justify-content-center">
-                    <label class="rz-label"></label>
-                    <div class="rz-form-input-wrapper rz-login-buttons w-100 d-flex justify-content-between">
-                        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Text="REGISTER" class="w-100" style="max-width: 300px;" />
+                <div class="rz-form-row">
+                    <div class="w-100 d-flex justify-content-center">
+                        <label class="rz-label"></label>
+                        <div class="rz-form-input-wrapper rz-login-buttons">
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Text="Register" />
+                        </div>
                     </div>
                 </div>
             </EditForm>
 
             <!-- Already Have an Account Section -->
-            <div class="rz-login text-center mt-3 w-100">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <span>Already have an account?</span>
-                    <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
-                        <RadzenButton ButtonType="ButtonType.Button" Variant="Variant.Flat" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="LOG IN" class="mt-2" />
-                    </a>
-                </div>
+            <div class="rz-register">
+                Already have an account?
+
+                <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
+                    <RadzenButton ButtonType="ButtonType.Button" Variant="Variant.Flat" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="Log in" />
+                </a>
             </div>
         </div>
     </RadzenCard>
