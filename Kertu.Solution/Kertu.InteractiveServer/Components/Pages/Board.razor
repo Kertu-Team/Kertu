@@ -1,4 +1,7 @@
 ﻿@page "/board"
+@inject IJSRuntime jsRuntime
+
+
 
 <RadzenDropZoneContainer TItem="MyTask" Data="data"
                          ItemSelector="@ItemSelector"
@@ -83,6 +86,7 @@
         {
             // Update item zone
             args.Item.Status = (Status)args.ToZone.Value;
+            SaveTasksToLocalStorage();
         }
 
         if (args.ToItem != null && args.ToItem != args.Item)
@@ -90,6 +94,7 @@
             // Reorder items in same zone or place the item at specific index in new zone
             data.Remove(args.Item);
             data.Insert(data.IndexOf(args.ToItem), args.Item);
+            SaveTasksToLocalStorage();
         }
     }
 
@@ -107,6 +112,10 @@
                     })
             .ToList();
     }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTasksFromLocalStorage();
+    }
 
     private void CreateItem()
     {
@@ -122,6 +131,49 @@
 
             // Clear the input field after creating the task
             newTaskName = string.Empty;
+            SaveTasksToLocalStorage();
+        }
+    }
+    private async Task SaveTasksToLocalStorage()
+    {
+        await jsRuntime.InvokeVoidAsync("localStorage.clear");  // Clear localStorage before saving updated data
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            var task = data[i];
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", $"task_name_{i}", task.Name);
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", $"task_status_{i}", task.Status.ToString());
+        }
+
+        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "task_count", data.Count.ToString());
+    }
+
+    private async Task LoadTasksFromLocalStorage()
+    {
+        var taskCountString = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "task_count");
+        if (int.TryParse(taskCountString, out var taskCount) && taskCount > 0)
+        {
+            data = new List<MyTask>();
+
+            for (int i = 0; i < taskCount; i++)
+            {
+                var name = await jsRuntime.InvokeAsync<string>("localStorage.getItem", $"task_name_{i}");
+                var statusString = await jsRuntime.InvokeAsync<string>("localStorage.getItem", $"task_status_{i}");
+                if (Enum.TryParse(statusString, out Status status))
+                {
+                    data.Add(new MyTask
+                        {
+                            Id = i,
+                            Name = name,
+                            Status = status
+                        });
+                }
+            }
+        }
+        else
+        {
+            // Initialize empty list if no tasks are found in localStorage
+            data = new List<MyTask>();
         }
     }
 
