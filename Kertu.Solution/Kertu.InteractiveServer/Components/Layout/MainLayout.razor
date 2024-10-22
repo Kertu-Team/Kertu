@@ -6,23 +6,28 @@
 
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Left" Gap="10" class="h-100">
 
-            @if (!IsAccountRoute)
-            {
-                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
-            }
-            else
-            {
-                <!-- Filler element to maintain layout consistency -->
-                <div style="width: 22px" />
-            }
-            <a href="/" class="h-100 d-flex align-items-center">
-                <img src="/favicon/favicon-48x48.png" alt="App logo" width="32" />
-            </a>
-            <a href="/" class="h-100 d-flex align-items-center">
-                <RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.25rem;" />
-            </a>
+                @if (!IsAccountRoute)
+                {
+                    <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                }
+                else
+                {
+                    <!-- Filler element to maintain layout consistency -->
+                    <div style="width: 22px" />
+                }
+                <a href="/" class="h-100 d-flex align-items-center">
+                    <img src="/favicon/favicon-48x48.png" alt="App logo" width="32" />
+                </a>
+                <a href="/" class="h-100 d-flex align-items-center">
+                    <RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.25rem;" />
+                </a>
+            </RadzenStack>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" Gap="10" class="h-100" >
+                <RadzenAppearanceToggle />
+            </RadzenStack>
         </RadzenStack>
     </RadzenHeader>
 
