@@ -50,7 +50,7 @@
 
 @code {
     // The new task name entered by the user
-    private string newTaskName;
+    private string? newTaskName;
 
     // Filter items by zone value
     Func<MyTask, RadzenDropZone<MyTask>, bool> ItemSelector = (item, zone) => item.Status == (Status)zone.Value && item.Status != Status.Deleted;
