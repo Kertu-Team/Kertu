@@ -6,9 +6,8 @@
 
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Left" Gap="10" class="h-100">
-
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
                 @if (!IsAccountRoute)
                 {
                     <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
@@ -25,9 +24,9 @@
                     <RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.25rem;" />
                 </a>
             </RadzenStack>
-            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" Gap="10" class="h-100" >
-                <RadzenAppearanceToggle />
-            </RadzenStack>
+
+            <RadzenAppearanceToggle />
+
         </RadzenStack>
     </RadzenHeader>
 
