@@ -3,6 +3,8 @@
 <RadzenComponents @rendermode="InteractiveServer" />
 
 @inject NavigationManager Navigation
+@inject LocalStorageService LocalStorageService
+@inject ThemeService ThemeService
 
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
@@ -27,7 +29,9 @@
 
             @if (!IsAccountRoute)
             {
-                <RadzenAppearanceToggle />
+                <div @onclick="ThemeToLocalStorage">
+                    <RadzenAppearanceToggle />
+                </div>
             }
         </RadzenStack>
     </RadzenHeader>
@@ -49,6 +53,23 @@
 @code {
     bool sidebarExpanded = false;
     bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var theme = await LocalStorageService.GetItemAsync("theme");
+            if (theme != null)
+            {
+                ThemeService.SetTheme(theme.ToString());
+            }
+        }
+    }
+
+    private async Task ThemeToLocalStorage()
+    {
+        await LocalStorageService.SetItemAsync("theme", ThemeService.Theme);
+    }
 }
 
 <div id="blazor-error-ui">

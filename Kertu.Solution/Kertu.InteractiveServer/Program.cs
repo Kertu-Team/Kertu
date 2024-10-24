@@ -1,3 +1,4 @@
+using Kertu.InteractiveServer;
 using Kertu.InteractiveServer.Components;
 using Kertu.InteractiveServer.Components.Account;
 using Kertu.InteractiveServer.Data;
@@ -44,6 +45,9 @@ builder.Services.AddDataProtection()
 
 //Radzen Components
 builder.Services.AddRadzenComponents();
+
+//Custom Services
+builder.Services.AddScoped<LocalStorageService>();
 
 var app = builder.Build();
 
