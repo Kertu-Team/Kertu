@@ -6,6 +6,7 @@
 @inject Account.IdentityUserAccessor UserAccessor
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
+@inject ContextMenuService ContextMenuService
 
 <RadzenPanel class="rz-mx-auto">
     <HeaderTemplate>
@@ -14,10 +15,10 @@
         </RadzenText>
     </HeaderTemplate>
     <ChildContent>
-        <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection >
+        <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
             <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((KertuTreeViewItem)i).Children.Any() == true)>
                 <Template Context="context">
-                    <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon())/>
+                    <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon()) />
                     <b>@context.Text</b>
                 </Template>
             </RadzenTreeLevel>
@@ -67,6 +68,35 @@
         {
             //clicked card board
         }
+    }
+
+    void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
+    {
+        ContextMenuService.Open(args,
+            new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Add", Value = 1, Icon = "add" },
+                new ContextMenuItem(){ Text = "Rename", Value = 2, Icon = "edit" },
+                new ContextMenuItem(){ Text = "Delete", Value = 3, Icon = "delete_forever" },
+                        },
+            (e) =>
+            {
+                switch (e.Value)
+                {
+                    case 1:
+
+                        break;
+
+                    case 2:
+
+                        break;
+
+
+                    case 3:
+
+                        break;
+                }
+            }
+         );
     }
 
     private List<KertuTreeViewItem> LoadTree(IQueryable<KertuElement> parent)
