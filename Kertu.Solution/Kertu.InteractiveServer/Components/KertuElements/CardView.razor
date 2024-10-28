@@ -1,17 +1,5 @@
 ﻿<RadzenStack Gap="8px" class="h-100">
     <RadzenTextBox Placeholder="Title..." class="w-100" aria-label="Card title" />
-    <RadzenHtmlEditor Placeholder="Description..." class="h-100" aria-label="Card description" @bind-Value=@descriptionValue UploadUrl="upload/image" />
-    <RadzenButton style="width: 160px" Icon="save" BusyText="Saving ..." IsBusy=@busy Click=@OnBusyClick Text="Save" />
+    <RadzenHtmlEditor Placeholder="Description..." class="h-100" aria-label="Card description" @bind-Value=@_descriptionValue UploadUrl="upload/image" />
+    <RadzenButton style="width: 160px" Icon="save" BusyText="Saving ..." IsBusy=@_busy Click=@OnBusyClick Text="Save" />
 </RadzenStack>
-
-@code {
-    string descriptionValue = string.Empty;
-    bool busy;
-
-    async Task OnBusyClick()
-    {
-        busy = true;
-        await Task.Delay(2000);
-        busy = false;
-    }
-}
