@@ -17,5 +17,22 @@ namespace Kertu.InteractiveServer.Data
             KertuElement = element;
         }
 
+        public string GetIcon()
+        {
+            if(KertuElement is KertuCard)
+            {
+                return "article";
+            }
+            else if (KertuElement is KertuList)
+            {
+                return "splitscreen";
+            }
+            else if (KertuElement is KertuBoard)
+            {
+                return "space_dashboard";
+            }
+            return "question_mark";
+        }
+
     }
 }

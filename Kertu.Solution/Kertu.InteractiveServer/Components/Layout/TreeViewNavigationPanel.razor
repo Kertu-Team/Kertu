@@ -5,6 +5,7 @@
 @inject ApplicationDbContext dbContext
 @inject Account.IdentityUserAccessor UserAccessor
 @inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager NavigationManager
 
 <RadzenPanel class="rz-mx-auto">
     <HeaderTemplate>
@@ -13,8 +14,13 @@
         </RadzenText>
     </HeaderTemplate>
     <ChildContent>
-        <RadzenTree Data="@kertuTreeViewItems" @ref=tree>
-            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" />
+        <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection >
+            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((KertuTreeViewItem)i).Children.Any() == true)>
+                <Template Context="context">
+                    <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon())/>
+                    <b>@context.Text</b>
+                </Template>
+            </RadzenTreeLevel>
         </RadzenTree>
     </ChildContent>
 </RadzenPanel>
@@ -44,6 +50,25 @@
         }
     }
 
+    object selection;
+    private void OnChange()
+    {
+        KertuTreeViewItem item = selection as KertuTreeViewItem;
+        if (item.KertuElement is KertuCard card)
+        {
+            //clicked card
+            //example: NavigationManager.NavigateTo($"/card/{card.Id}");
+        }
+        else if (item.KertuElement is KertuList list)
+        {
+            //clicked list
+        }
+        else if (item.KertuElement is KertuBoard board)
+        {
+            //clicked card board
+        }
+    }
+
     private List<KertuTreeViewItem> LoadTree(IQueryable<KertuElement> parent)
     {
         List<KertuTreeViewItem> list = new List<KertuTreeViewItem>();
@@ -59,7 +84,7 @@
             children = kertuBoard.Include(kl => kl.ChildKertuElements).First().ChildKertuElements.Cast<KertuElement>().ToList();
         }
 
-        foreach(var child in children)
+        foreach (var child in children)
         {
             KertuTreeViewItem item = new(child);
             var fromDB = dbContext.KertuElements.Where(ke => ke == child);
