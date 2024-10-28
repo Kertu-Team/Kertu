@@ -8,23 +8,16 @@
 @inject NavigationManager NavigationManager
 @inject ContextMenuService ContextMenuService
 
-<RadzenPanel class="rz-mx-auto">
-    <HeaderTemplate>
-        <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
-            <RadzenIcon Icon="account_tree" class="rz-me-1" />
-        </RadzenText>
-    </HeaderTemplate>
-    <ChildContent>
-        <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
-            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((KertuTreeViewItem)i).Children.Any() == true)>
-                <Template Context="context">
-                    <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon()) />
-                    <b>@context.Text</b>
-                </Template>
-            </RadzenTreeLevel>
-        </RadzenTree>
-    </ChildContent>
-</RadzenPanel>
+<RadzenStack class="rz-m-3">
+    <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
+        <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((KertuTreeViewItem)i).Children.Any() == true)>
+            <Template Context="context">
+                <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon()) />
+                <b>@context.Text</b>
+            </Template>
+        </RadzenTreeLevel>
+    </RadzenTree>
+</RadzenStack>
 
 
 @code {
@@ -77,7 +70,7 @@
                 new ContextMenuItem(){ Text = "Add", Value = 1, Icon = "add" },
                 new ContextMenuItem(){ Text = "Rename", Value = 2, Icon = "edit" },
                 new ContextMenuItem(){ Text = "Delete", Value = 3, Icon = "delete_forever" },
-                        },
+                            },
             (e) =>
             {
                 switch (e.Value)
