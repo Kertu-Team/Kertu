@@ -1,33 +1,73 @@
-﻿<RadzenPanel class="rz-mx-auto">
+﻿@using Data
+@using Data.KertuElements
+@using Microsoft.EntityFrameworkCore
+
+@inject ApplicationDbContext dbContext
+@inject Account.IdentityUserAccessor UserAccessor
+@inject IHttpContextAccessor httpContextAccessor
+
+<RadzenPanel class="rz-mx-auto">
     <HeaderTemplate>
         <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
             <RadzenIcon Icon="account_tree" class="rz-me-1" />
         </RadzenText>
     </HeaderTemplate>
     <ChildContent>
-        <RadzenTree>
-            <RadzenTreeItem Text="Home">
-                <Template>
-                    <NavLink href="" Match="NavLinkMatch.All">Home</NavLink>
-                </Template>
-            </RadzenTreeItem>
-
-            <RadzenTreeItem Text="Task Board">
-                <Template>
-                    <NavLink href="board" Match="NavLinkMatch.All">Board</NavLink>
-
-                </Template>
-            </RadzenTreeItem>
-            <RadzenTreeItem Text="Lists">
-                <Template>
-                    <NavLink href="lists" Match="NavLinkMatch.All">Lists</NavLink>
-                </Template>
-            </RadzenTreeItem>
+        <RadzenTree Data="@kertuTreeViewItems" @ref=tree>
+            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" />
         </RadzenTree>
     </ChildContent>
 </RadzenPanel>
 
 
 @code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    List<KertuTreeViewItem> kertuTreeViewItems = new();
+    RadzenTree tree = new();
+
+    ApplicationUser currentUser;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HttpContext = httpContextAccessor.HttpContext;
+        currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
+        var items = dbContext.Users.Include(u => u.UserKertuElements).Single(u => u == currentUser).UserKertuElements;
+        foreach (var item in items)
+        {
+            KertuTreeViewItem treeViewItem = new(item);
+            var fromDB = dbContext.KertuElements.Where(ke => ke == item);
+            treeViewItem.Children = LoadTree(fromDB);
+            kertuTreeViewItems.Add(treeViewItem);
+        }
+    }
+
+    private List<KertuTreeViewItem> LoadTree(IQueryable<KertuElement> parent)
+    {
+        List<KertuTreeViewItem> list = new List<KertuTreeViewItem>();
+        List<KertuElement> children = new List<KertuElement>();
+        if (parent.First() is KertuList)
+        {
+            var kertuList = parent.Cast<KertuList>();
+            children = kertuList.Include(kl => kl.ChildCards).First().ChildCards.Cast<KertuElement>().ToList();
+        }
+        else if (parent.First() is KertuBoard)
+        {
+            var kertuBoard = parent.Cast<KertuBoard>();
+            children = kertuBoard.Include(kl => kl.ChildKertuElements).First().ChildKertuElements.Cast<KertuElement>().ToList();
+        }
+
+        foreach(var child in children)
+        {
+            KertuTreeViewItem item = new(child);
+            var fromDB = dbContext.KertuElements.Where(ke => ke == child);
+            item.Children = LoadTree(fromDB);
+            list.Add(item);
+        }
+
+        return list;
+    }
 
 }
