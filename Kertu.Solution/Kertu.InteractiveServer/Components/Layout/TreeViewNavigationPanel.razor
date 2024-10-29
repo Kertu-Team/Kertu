@@ -7,6 +7,7 @@
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
 @inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
 
 <RadzenStack class="rz-m-3">
     <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
@@ -83,13 +84,28 @@
 
                         break;
 
-
                     case 3:
 
                         break;
                 }
             }
          );
+    }
+
+    private async Task RenameKertuElement(KertuElement element)
+    {
+        var result = await DialogService.OpenAsync("Add a subsidiary", d =>
+    @<RadzenStack Gap="1.5rem">
+        <RadzenTextBox @bind-Value="element.Name" />
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Ok" Click="() => d.Close(null)" Style="width: 80px;" />
+                <RadzenButton Text="Cancel" Click="() => d.Close(null)" ButtonStyle="ButtonStyle.Light" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+
     }
 
     private List<KertuTreeViewItem> LoadTree(IQueryable<KertuElement> parent)

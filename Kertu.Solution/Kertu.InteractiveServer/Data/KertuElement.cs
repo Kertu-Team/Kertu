@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kertu.InteractiveServer.Data
 {
@@ -13,5 +14,10 @@ namespace Kertu.InteractiveServer.Data
         [Key]
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+
+        [ForeignKey(nameof(ApplicationUser))]
+        [Column(TypeName = "varchar(255)")]
+        public string? ApplicationUserId { get; set; }
+        public virtual ApplicationUser? ApplicationUser { get; set; }
     }
 }
