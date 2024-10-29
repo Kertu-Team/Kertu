@@ -6,46 +6,73 @@
 @inject ApplicationDbContext dbContext
 
 <RadzenStack Gap="1rem">
-    <RadzenCard Variant="Variant.Outlined">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1.5rem;" Wrap="FlexWrap.Wrap">
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem;">
-                <RadzenLabel Text="Logical filter operator:" Component="operator" />
-                <RadzenDropDown @bind-Value="@logicalFilterOperator" TextProperty="Text" ValueProperty="Value" Name="operator" Change=@(args => grid.Reload())
-                                Data="@(Enum.GetValues(typeof(LogicalFilterOperator)).Cast<LogicalFilterOperator>().Select(t => new { Text = $"{t}", Value = t }))" />
-            </RadzenStack>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem;">
-                <RadzenLabel Text="Filter case sensitivity:" Component="caseSensitivity" />
-                <RadzenDropDown @bind-Value="@filterCaseSensitivity" TextProperty="Text" ValueProperty="Value" Name="caseSensitivity" Change=@(args => grid.Reload())
-                                Data="@(Enum.GetValues(typeof(FilterCaseSensitivity)).Cast<FilterCaseSensitivity>().Select(t => new { Text = $"{t}", Value = t }))" />
-            </RadzenStack>
-        </RadzenStack>
-    </RadzenCard>
+	<!-- Tasks List Section -->
+	<RadzenCard Variant="Variant.Outlined">
+		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Tasks</RadzenText>
+		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
+						Data="@activeTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+			<Template Context="task">
+				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
+					<RadzenRow Gap="0">
+						<RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
+							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-mb-0">Card ID</RadzenText>
+							<RadzenText TextStyle="TextStyle.Body2">@(task.Id)</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
+							<RadzenButton Text="View Details" Style="width: 100%" />
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenCard>
+			</Template>
+		</RadzenDataList>
+	</RadzenCard>
 
-    <RadzenDataGrid @ref=grid AllowFiltering="true" AllowColumnResize="true"
-                    FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@kertuList" ColumnWidth="300px"
-                    FilterCaseSensitivity="@filterCaseSensitivity" LogicalFilterOperator="@logicalFilterOperator">
-        <Columns>
-            <RadzenDataGridColumn Property="@nameof(KertuCard.Id)" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-            <RadzenDataGridColumn Property="@nameof(KertuCard.Name)" Title="Task Name" Width="200px" />
-        </Columns>
-    </RadzenDataGrid>
+	<!-- Completed Tasks List Section -->
+	<RadzenCard Variant="Variant.Outlined">
+		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Completed Tasks</RadzenText>
+		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
+						Data="@completedTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+			<Template Context="task">
+				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
+					<RadzenRow Gap="0">
+						<RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
+							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-mb-0">Card ID</RadzenText>
+							<RadzenText TextStyle="TextStyle.Body2">@(task.Id)</RadzenText>
+						</RadzenColumn>
+						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
+							<RadzenButton Text="View Details" Style="width: 100%" />
+						</RadzenColumn>
+					</RadzenRow>
+				</RadzenCard>
+			</Template>
+		</RadzenDataList>
+	</RadzenCard>
 </RadzenStack>
 
+<style>
+	.product-title {
+		min-height: 72px;
+		background-color: var(--rz-secondary-lighter);
+	}
+</style>
+
 @code {
-    RadzenDataGrid<KertuCard> grid;
+	List<KertuCard> activeTasks = new();
+	List<KertuCard> completedTasks = new();
 
-    LogicalFilterOperator logicalFilterOperator = LogicalFilterOperator.And;
-    FilterCaseSensitivity filterCaseSensitivity = FilterCaseSensitivity.CaseInsensitive;
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
 
-    List<KertuCard> kertuList = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        // Fetch KertuLists from the database (instead of KertuElements)
-        kertuList = await dbContext.Set<KertuCard>()
-            .Where(kc => kc.Name != null) // Ensure non-null values for filtering
-            .ToListAsync();
-    }
+		// Fetch and filter tasks based on completion status
+		var allTasks = await dbContext.KertuCards.Where(kc => kc.Name != null).ToListAsync();
+		activeTasks = allTasks.Where(t => !t.IsCompleted).ToList();
+		completedTasks = allTasks.Where(t => t.IsCompleted).ToList();
+	}
 }

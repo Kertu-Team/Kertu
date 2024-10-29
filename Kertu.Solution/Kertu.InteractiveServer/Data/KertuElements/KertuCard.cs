@@ -8,6 +8,6 @@
     /// </remarks>
     public class KertuCard : KertuElement
     {
-
+        public bool IsCompleted { get; set; }
     }
 }
