@@ -18,6 +18,12 @@ namespace Kertu.InteractiveServer.Data
             modelBuilder.Entity<KertuElement>()
                 .HasDiscriminator<string>("type");
 
+            modelBuilder.Entity<KertuElement>()
+                .HasOne(ke => ke.ApplicationUser)
+                .WithMany(au => au.UserKertuElements)
+                .HasForeignKey(ke => ke.ApplicationUserId);
+
+
             modelBuilder.Entity<KertuList>()
                 .HasMany<KertuCard>();
 
