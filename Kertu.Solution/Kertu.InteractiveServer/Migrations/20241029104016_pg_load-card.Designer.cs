@@ -3,6 +3,7 @@ using System;
 using Kertu.InteractiveServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kertu.InteractiveServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241029104016_pg_load-card")]
+    partial class pg_loadcard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,9 +110,6 @@ namespace Kertu.InteractiveServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("type")
                         .IsRequired()
                         .HasMaxLength(13)
@@ -122,8 +122,6 @@ namespace Kertu.InteractiveServer.Migrations
                     b.HasIndex("KertuBoardId");
 
                     b.HasIndex("KertuBoardId1");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("KertuElements");
 
@@ -316,13 +314,7 @@ namespace Kertu.InteractiveServer.Migrations
                         .WithMany()
                         .HasForeignKey("KertuBoardId1");
 
-                    b.HasOne("Kertu.InteractiveServer.Data.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

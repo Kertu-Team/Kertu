@@ -3,6 +3,7 @@ using System;
 using Kertu.InteractiveServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kertu.InteractiveServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241029114131_hlepp-elementowner")]
+    partial class hleppelementowner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,9 +97,6 @@ namespace Kertu.InteractiveServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<int?>("KertuBoardId")
                         .HasColumnType("integer");
 
@@ -116,8 +116,6 @@ namespace Kertu.InteractiveServer.Migrations
                         .HasColumnType("character varying(13)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("KertuBoardId");
 
@@ -304,10 +302,6 @@ namespace Kertu.InteractiveServer.Migrations
 
             modelBuilder.Entity("Kertu.InteractiveServer.Data.KertuElement", b =>
                 {
-                    b.HasOne("Kertu.InteractiveServer.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany("UserKertuElements")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Kertu.InteractiveServer.Data.KertuElements.KertuBoard", null)
                         .WithMany("ChildKertuElements")
                         .HasForeignKey("KertuBoardId");
@@ -317,10 +311,8 @@ namespace Kertu.InteractiveServer.Migrations
                         .HasForeignKey("KertuBoardId1");
 
                     b.HasOne("Kertu.InteractiveServer.Data.ApplicationUser", "Owner")
-                        .WithMany()
+                        .WithMany("UserKertuElements")
                         .HasForeignKey("OwnerId");
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Owner");
                 });
