@@ -8,6 +8,6 @@
     /// </remarks>
     public class KertuCard : KertuElement
     {
-
+        public string? Description { get; set; }
     }
 }

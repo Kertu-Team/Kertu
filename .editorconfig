@@ -29,6 +29,9 @@ dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0044.severity = warning
 
 # IDE0051: Remove unused private members
+dotnet_diagnostic.IDE0051.severity = warning
+
+# IDE0052
 dotnet_diagnostic.IDE0052.severity = warning
 
 # Nullable context

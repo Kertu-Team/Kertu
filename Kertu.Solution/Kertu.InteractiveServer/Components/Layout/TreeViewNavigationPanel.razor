@@ -50,8 +50,7 @@
         KertuTreeViewItem item = selection as KertuTreeViewItem;
         if (item.KertuElement is KertuCard card)
         {
-            //clicked card
-            //example: NavigationManager.NavigateTo($"/card/{card.Id}");
+            NavigationManager.NavigateTo($"/card/{card.Id}", true);
         }
         else if (item.KertuElement is KertuList list)
         {

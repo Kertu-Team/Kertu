@@ -200,3 +200,6 @@ __pycache__/
 
 # Windows thumbnail cache files
 Thumbs.db
+Kertu.Solution/Kertu.InteractiveServer/Migrations/20241029101934_pg_card-description.cs
+Kertu.Solution/Kertu.InteractiveServer/Migrations/20241029101934_pg_card-description.Designer.cs
+Kertu.Solution/Kertu.InteractiveServer/Migrations/ApplicationDbContextModelSnapshot.cs
