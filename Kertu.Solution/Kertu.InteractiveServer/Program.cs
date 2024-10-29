@@ -45,6 +45,13 @@ builder.Services.AddDataProtection()
 //Radzen Components
 builder.Services.AddRadzenComponents();
 
+//App cookies
+builder.Services.AddRadzenCookieThemeService(options =>
+{
+    options.Name = "KertuApplicationTheme"; // The name of the cookie
+    options.Duration = TimeSpan.FromDays(365); // The duration of the cookie
+});
+
 var app = builder.Build();
 
 // Apply migrations on startup
