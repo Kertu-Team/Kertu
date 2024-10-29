@@ -11,7 +11,7 @@
 	<!-- Tasks List Section -->
 	<RadzenCard Variant="Variant.Outlined">
 		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Tasks</RadzenText>
-		<RadzenDataList AllowVirtualization="true" Style="height:300px;width:80%; overflow:auto;"
+		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
 						Data="@activeTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 			<Template Context="task">
 				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
@@ -66,7 +66,7 @@
 	}
 
 	.radio-check {
-		font-size: 30px;
+		font-size: 24px;
 		cursor: pointer;
 		transition: opacity 0.3s;
 	}
@@ -87,10 +87,6 @@
 
 	.radio-check:hover .radio-checked {
 		opacity: 1;
-	}
-
-	.rz-p-4 {
-		padding: 0.5rem; /* Reduced padding */
 	}
 </style>
 
