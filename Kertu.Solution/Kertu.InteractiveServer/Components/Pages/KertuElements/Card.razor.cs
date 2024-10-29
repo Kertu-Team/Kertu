@@ -3,9 +3,9 @@ using Kertu.InteractiveServer.Data.KertuElements;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
-namespace Kertu.InteractiveServer.Components.KertuElements
+namespace Kertu.InteractiveServer.Components.Pages.KertuElements
 {
-    public partial class CardView : ComponentBase
+    public partial class Card : ComponentBase
     {
         [Parameter]
         public string? Id { get; set; }
@@ -13,6 +13,8 @@ namespace Kertu.InteractiveServer.Components.KertuElements
 
         [Inject]
         ApplicationDbContext? DbContext { get; set; }
+        [Inject]
+        NotificationService? NotificationService { get; set; }
 
         KertuCard? _card;
         string _title = string.Empty;
@@ -40,7 +42,7 @@ namespace Kertu.InteractiveServer.Components.KertuElements
             _card.Name = _title;
             _card.Description = _description;
             await Task.Run(() => DbContext?.SaveChanges());
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Duration = 4000 });
+            NotificationService?.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Duration = 4000 });
             _busy = false;
         }
     }

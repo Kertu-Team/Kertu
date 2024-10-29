@@ -1,3 +1,4 @@
+using Kertu.InteractiveServer.Data.KertuElements;
 using Microsoft.AspNetCore.Identity;
 
 namespace Kertu.InteractiveServer.Data

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Kertu.InteractiveServer.Data
+namespace Kertu.InteractiveServer.Data.KertuElements
 {
     /// <summary>
     /// Base class for future Kertu elements
