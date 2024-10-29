@@ -1,5 +1,10 @@
 ﻿@page "/card/{Id}"
 
+@using Kertu.InteractiveServer.Data;
+
+@inject ApplicationDbContext dbContext
+@inject NotificationService notificationService
+
 <RadzenStack Gap="8px" class="h-100">
     <RadzenTextBox Placeholder="Title..." class="w-100" aria-label="Card title" @bind-Value=@_title />
     <RadzenHtmlEditor Placeholder="Description..." class="h-100" aria-label="Card description" @bind-Value=@_description UploadUrl="upload/image" />

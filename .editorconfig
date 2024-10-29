@@ -341,3 +341,11 @@ dotnet_naming_style.member_style.capitalization = pascal_case
 dotnet_naming_rule.members_are_pascal_case.severity = warning
 dotnet_naming_rule.members_are_pascal_case.symbols = member_symbol
 dotnet_naming_rule.members_are_pascal_case.style = member_style
+
+# blazor
+dotnet_diagnostic.IDE2000.severity = warning
+dotnet_diagnostic.IDE2002.severity = warning
+dotnet_diagnostic.IDE0028.severity = warning
+csharp_style_expression_bodied_lambdas = true:warning
+dotnet_diagnostic.IDE0130.severity = warning
+dotnet_diagnostic.IDE0290.severity = warning

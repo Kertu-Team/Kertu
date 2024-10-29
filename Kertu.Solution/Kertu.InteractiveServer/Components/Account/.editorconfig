@@ -1,1 +1,8 @@
 root = true
+
+[*]
+
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.IDE0053.severity = none
+dotnet_diagnostic.CA1859.severity = none
+dotnet_diagnostic.IDE0058.severity = none

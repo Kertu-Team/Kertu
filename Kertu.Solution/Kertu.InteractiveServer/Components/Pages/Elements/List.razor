@@ -1,5 +1,5 @@
-﻿@page "/lists"
-@using Kertu.InteractiveServer.Data.KertuElements
+﻿@page "/list"
+@using Models = Kertu.InteractiveServer.Data.Models.Elements
 @using Microsoft.EntityFrameworkCore
 @using Data
 @inject ApplicationDbContext dbContext
@@ -12,7 +12,7 @@
 	<RadzenCard Variant="Variant.Outlined">
 		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Tasks</RadzenText>
 		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
-						Data="@activeTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+						Data="@activeTasks" TItem="Models.Card" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 			<Template Context="task">
 				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
 					<RadzenRow Gap="0">
@@ -37,7 +37,7 @@
 	<RadzenCard Variant="Variant.Outlined">
 		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Completed Tasks</RadzenText>
 		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
-						Data="@completedTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+						Data="@completedTasks" TItem="Models.Card" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 			<Template Context="task">
 				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
 					<RadzenRow Gap="0">
@@ -91,24 +91,24 @@
 </style>
 
 @code {
-	List<KertuCard> activeTasks = new();
-	List<KertuCard> completedTasks = new();
+	List<Models.Card> activeTasks = new();
+	List<Models.Card> completedTasks = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
 		// Fetch and filter tasks based on completion status
-		var allTasks = await dbContext.KertuCards.Where(kc => kc.Name != null).ToListAsync();
+		var allTasks = await dbContext.Cards.Where(kc => kc.Name != null).ToListAsync();
 		activeTasks = allTasks.Where(t => !t.IsCompleted).ToList();
 		completedTasks = allTasks.Where(t => t.IsCompleted).ToList();
 	}
 
-	private async Task MarkAsCompleted(KertuCard task)
+	private async Task MarkAsCompleted(Models.Card task)
 	{
 		// Update the task's completion status
 		task.IsCompleted = true;
-		dbContext.KertuCards.Update(task);
+		dbContext.Cards.Update(task);
 		await dbContext.SaveChangesAsync();
 
 		// Refresh the lists
@@ -116,11 +116,11 @@
 		completedTasks.Add(task);
 	}
 
-	private async Task UnmarkAsCompleted(KertuCard task)
+	private async Task UnmarkAsCompleted(Models.Card task)
 	{
 		// Update the task's completion status
 		task.IsCompleted = false;
-		dbContext.KertuCards.Update(task);
+		dbContext.Cards.Update(task);
 		await dbContext.SaveChangesAsync();
 
 		// Refresh the lists

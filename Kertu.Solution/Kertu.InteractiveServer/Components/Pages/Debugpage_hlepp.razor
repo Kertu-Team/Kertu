@@ -6,7 +6,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Kertu.InteractiveServer.Data;
-@using Kertu.InteractiveServer.Data.KertuElements;
+@using Models = Kertu.InteractiveServer.Data.Models.Elements;
 
 @inject ApplicationDbContext dbContext
 @inject UserManager<ApplicationUser> UserManager
@@ -31,60 +31,60 @@
 
     void click()
     {
-        KertuBoard board1 = new KertuBoard();
+        Models.Board board1 = new();
         board1.Name = "Board1";
         board1.Owner = currentUser;
-        KertuBoard board2 = new KertuBoard();
+        Models.Board board2 = new();
         board2.Name = "Board2";
         board2.Owner = currentUser;
-        KertuCard card1 = new KertuCard();
+        Models.Card card1 = new();
         card1.Name = "Card1";
         card1.Description = "Description1";
         card1.Owner = currentUser;
-        KertuCard card2 = new KertuCard();
+        Models.Card card2 = new();
         card2.Name = "Card2";
         card2.Description = "Description2";
         card2.Owner = currentUser;
-        KertuCard card3 = new KertuCard();
+        Models.Card card3 = new();
         card3.Name = "Card3";
         card3.Description = "Description3";
         card3.Owner = currentUser;
-        KertuCard card4 = new KertuCard();
+        Models.Card card4 = new();
         card4.Name = "Card4";
         card4.Owner = currentUser;
-        KertuCard card5 = new KertuCard();
+        Models.Card card5 = new();
         card5.Name = "Card5";
         card5.Owner = currentUser;
-        KertuCard card6 = new KertuCard();
+        Models.Card card6 = new();
         card6.Name = "Card6";
         card6.Owner = currentUser;
-        KertuCard card7 = new KertuCard();
+        Models.Card card7 = new();
         card7.Name = "Card7";
         card7.Owner = currentUser;
-        KertuList list1 = new KertuList();
+        Models.List list1 = new();
         list1.Name = "List1";
         list1.Owner = currentUser;
-        KertuList list2 = new KertuList();
+        Models.List list2 = new();
         list2.Name = "List2";
         list2.Owner = currentUser;
-        KertuList list3 = new KertuList();
+        Models.List list3 = new();
         list3.Name = "List3";
         list3.Owner = currentUser;
 
 
-        board1.ChildKertuElements.Add(card1);
-        board1.ChildKertuElements.Add(card2);
-        board1.ChildKertuElements.Add(list1);
-        board1.ChildKertuElements.Add(board2);
-        list1.ChildCards.Add(card3);
-        list1.ChildCards.Add(card4);
-        board2.ChildKertuElements.Add(card5);
-        board2.ChildKertuElements.Add(list2);
-        board2.ChildKertuElements.Add(list3);
-        list3.ChildCards.Add(card6);
+        board1.Children.Add(card1);
+        board1.Children.Add(card2);
+        board1.Children.Add(list1);
+        board1.Children.Add(board2);
+        list1.Children.Add(card3);
+        list1.Children.Add(card4);
+        board2.Children.Add(card5);
+        board2.Children.Add(list2);
+        board2.Children.Add(list3);
+        list3.Children.Add(card6);
 
-        currentUser.UserKertuElements.Add(board1);
-        currentUser.UserKertuElements.Add(card7);
+        currentUser.UserElements.Add(board1);
+        currentUser.UserElements.Add(card7);
 
         dbContext.SaveChanges();
     }

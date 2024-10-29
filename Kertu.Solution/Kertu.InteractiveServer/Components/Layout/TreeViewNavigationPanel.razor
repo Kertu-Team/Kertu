@@ -1,5 +1,6 @@
 ﻿@using Data
-@using Data.KertuElements
+@using Data.Models
+@using Kertu.InteractiveServer.Data.Models.Elements
 @using Microsoft.EntityFrameworkCore
 
 @inject ApplicationDbContext dbContext
@@ -10,10 +11,10 @@
 @inject DialogService DialogService
 
 <RadzenStack class="rz-m-3">
-    <RadzenTree Data="@kertuTreeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
-        <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((KertuTreeViewItem)i).Children.Any() == true)>
+    <RadzenTree Data="@treeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
+        <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true)>
             <Template Context="context">
-                <RadzenIcon Icon=@((context.Value as KertuTreeViewItem).GetIcon()) />
+                <RadzenIcon Icon=@((context.Value as TreeViewItem).GetIcon()) />
                 <b style="user-select: none;">@context.Text</b>
             </Template>
         </RadzenTreeLevel>
@@ -25,39 +26,40 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    List<KertuTreeViewItem> kertuTreeViewItems = new();
+    List<TreeViewItem> treeViewItems = new();
     RadzenTree tree = new();
 
     ApplicationUser currentUser;
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
         HttpContext = httpContextAccessor.HttpContext;
         currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
-        var items = dbContext.Users.Include(u => u.UserKertuElements).Single(u => u == currentUser).UserKertuElements;
-        foreach (var item in items)
+        var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == currentUser).UserElements;
+        foreach (var element in elements)
         {
-            KertuTreeViewItem treeViewItem = new(item);
-            var fromDB = dbContext.KertuElements.Where(ke => ke == item);
+            TreeViewItem treeViewItem = new(element);
+            var fromDB = dbContext.Elements.Where(ke => ke == element);
             treeViewItem.Children = LoadTree(fromDB);
-            kertuTreeViewItems.Add(treeViewItem);
+            treeViewItems.Add(treeViewItem);
         }
     }
 
     object selection;
     private void OnChange()
     {
-        KertuTreeViewItem item = selection as KertuTreeViewItem;
-        if (item.KertuElement is KertuCard card)
+        TreeViewItem item = selection as TreeViewItem;
+        if (item.Element is Card card)
         {
             NavigationManager.NavigateTo($"/card/{card.Id}", true);
         }
-        else if (item.KertuElement is KertuList list)
+        else if (item.Element is List list)
         {
             //clicked list
         }
-        else if (item.KertuElement is KertuBoard board)
+        else if (item.Element is Board board)
         {
             //clicked card board
         }
@@ -91,11 +93,11 @@
                     break;
 
                 case 2:
-                    RenameKertuElement((args.Value as KertuTreeViewItem).KertuElement);
+                    RenameElement((args.Value as TreeViewItem).Element);
                     break;
 
                 case 3:
-                    DeleteKertuElement((args.Value as KertuTreeViewItem).KertuElement);
+                    DeleteElement((args.Value as TreeViewItem).Element);
                     break;
             }
         }
@@ -103,7 +105,7 @@
     }
 
     #region menu functions
-    private async Task RenameKertuElement(KertuElement element)
+    private async Task RenameElement(Element element)
     {
         var result = await DialogService.OpenAsync("Rename element", d =>
     @<RadzenStack Gap="1.5rem">
@@ -119,34 +121,34 @@
 
     }
 
-    private async Task DeleteKertuElement(KertuElement element)
+    private async Task DeleteElement(Element element)
     {
         var result = await DialogService.Confirm($"Are you sure to delete {element.Name} and all of its children?", "Confirm", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No", CloseDialogOnOverlayClick=true, CloseDialogOnEsc=true });
 
         if(result == true)
         {
-            CascadeDelete(dbContext.KertuElements.Where(ke => ke.Id == element.Id));
+            CascadeDelete(dbContext.Elements.Where(ke => ke.Id == element.Id));
 
             NavigationManager.Refresh(true);
         }
     }
-    void CascadeDelete(IQueryable<KertuElement> parent)
+    void CascadeDelete(IQueryable<Element> parent)
     {
-        List<KertuElement> children = new List<KertuElement>();
-        if (parent.First() is KertuList)
+        List<Element> children = new List<Element>();
+        if (parent.First() is List)
         {
-            var kertuList = parent.Cast<KertuList>();
-            children = kertuList.Include(kl => kl.ChildCards).First().ChildCards.Cast<KertuElement>().ToList();
+            var list = parent.Cast<List>();
+            children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
         }
-        else if (parent.First() is KertuBoard)
+        else if (parent.First() is Board)
         {
-            var kertuBoard = parent.Cast<KertuBoard>();
-            children = kertuBoard.Include(kl => kl.ChildKertuElements).First().ChildKertuElements.Cast<KertuElement>().ToList();
+            var board = parent.Cast<Board>();
+            children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
         }
 
         foreach (var child in children)
         {
-            var fromDB = dbContext.KertuElements.Where(ke => ke == child);
+            var fromDB = dbContext.Elements.Where(ke => ke == child);
             CascadeDelete(fromDB);
         }
         dbContext.Remove(parent.First());
@@ -154,30 +156,30 @@
     }
     #endregion
 
-    private List<KertuTreeViewItem> LoadTree(IQueryable<KertuElement> parent)
+    private List<TreeViewItem> LoadTree(IQueryable<Element> parent)
     {
-        List<KertuTreeViewItem> list = new List<KertuTreeViewItem>();
-        List<KertuElement> children = new List<KertuElement>();
-        if (parent.First() is KertuList)
+        List<TreeViewItem> treeViewItems = new();
+        List<Element> children = new List<Element>();
+        if (parent.First() is List)
         {
-            var kertuList = parent.Cast<KertuList>();
-            children = kertuList.Include(kl => kl.ChildCards).First().ChildCards.Cast<KertuElement>().ToList();
+            var list = parent.Cast<List>();
+            children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
         }
-        else if (parent.First() is KertuBoard)
+        else if (parent.First() is Board)
         {
-            var kertuBoard = parent.Cast<KertuBoard>();
-            children = kertuBoard.Include(kl => kl.ChildKertuElements).First().ChildKertuElements.Cast<KertuElement>().ToList();
+            var board = parent.Cast<Board>();
+            children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
         }
 
         foreach (var child in children)
         {
-            KertuTreeViewItem item = new(child);
-            var fromDB = dbContext.KertuElements.Where(ke => ke == child);
+            TreeViewItem item = new(child);
+            var fromDB = dbContext.Elements.Where(ke => ke == child);
             item.Children = LoadTree(fromDB);
-            list.Add(item);
+            treeViewItems.Add(item);
         }
 
-        return list;
+        return treeViewItems;
     }
 
 }

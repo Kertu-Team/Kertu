@@ -1,4 +1,4 @@
-using Kertu.InteractiveServer.Data.KertuElements;
+using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,29 +6,26 @@ namespace Kertu.InteractiveServer.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
-        public DbSet<KertuElement> KertuElements { get; set; }
-        public DbSet<KertuCard> KertuCards { get; set; }
-        
-
+        public DbSet<Element> Elements { get; set; }
+        public DbSet<Card> Cards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<KertuElement>()
+            modelBuilder.Entity<Element>()
                 .HasDiscriminator<string>("type");
 
-            modelBuilder.Entity<KertuElement>()
+            modelBuilder.Entity<Element>()
                 .HasOne(ke => ke.ApplicationUser)
-                .WithMany(au => au.UserKertuElements)
+                .WithMany(au => au.UserElements)
                 .HasForeignKey(ke => ke.ApplicationUserId);
 
+            modelBuilder.Entity<List>()
+                .HasMany<Card>();
 
-            modelBuilder.Entity<KertuList>()
-                .HasMany<KertuCard>();
-
-            modelBuilder.Entity<KertuBoard>()
-                .HasMany<KertuElement>();
+            modelBuilder.Entity<Board>()
+                .HasMany<Element>();
         }
     }
 }

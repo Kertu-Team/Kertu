@@ -48,7 +48,7 @@ builder.Services.AddRadzenComponents();
 //App cookies
 builder.Services.AddRadzenCookieThemeService(options =>
 {
-    options.Name = "KertuApplicationTheme"; // The name of the cookie
+    options.Name = "ApplicationTheme"; // The name of the cookie
     options.Duration = TimeSpan.FromDays(365); // The duration of the cookie
 });
 
