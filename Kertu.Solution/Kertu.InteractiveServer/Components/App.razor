@@ -45,7 +45,7 @@
 
         if (HttpContext != null)
         {
-            var theme = HttpContext.Request.Cookies["MyApplicationTheme"];
+            var theme = HttpContext.Request.Cookies["KertuApplicationTheme"];
 
             if (!string.IsNullOrEmpty(theme) && ThemeService is not null)
             {
