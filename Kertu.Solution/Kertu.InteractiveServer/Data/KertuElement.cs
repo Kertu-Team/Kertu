@@ -15,9 +15,24 @@ namespace Kertu.InteractiveServer.Data
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
 
+        /// <summary>
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// DO NOT USE
+        /// </summary>
         [ForeignKey(nameof(ApplicationUser))]
         [Column(TypeName = "varchar(255)")]
         public string? ApplicationUserId { get; set; }
         public virtual ApplicationUser? ApplicationUser { get; set; }
+
+
+        [Column(TypeName = "varchar(255)")]
+        public string? OwnerId { get; set; }
+        public virtual ApplicationUser? Owner { get; set; }
     }
 }
