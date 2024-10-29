@@ -8,7 +8,7 @@ namespace Kertu.InteractiveServer.Data
     {
         public DbSet<KertuElement> KertuElements { get; set; }
         public DbSet<KertuCard> KertuCards { get; set; }
-        public bool IsCompleted { get; set; }
+        
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

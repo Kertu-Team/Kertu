@@ -2,14 +2,16 @@
 @using Kertu.InteractiveServer.Data.KertuElements
 @using Microsoft.EntityFrameworkCore
 @using Data
-
 @inject ApplicationDbContext dbContext
+
+<!-- Include Material Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
 <RadzenStack Gap="1rem">
 	<!-- Tasks List Section -->
 	<RadzenCard Variant="Variant.Outlined">
 		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Tasks</RadzenText>
-		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
+		<RadzenDataList AllowVirtualization="true" Style="height:300px;width:80%; overflow:auto;"
 						Data="@activeTasks" TItem="KertuCard" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 			<Template Context="task">
 				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
@@ -18,11 +20,12 @@
 							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
 						</RadzenColumn>
 						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
-							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-mb-0">Card ID</RadzenText>
-							<RadzenText TextStyle="TextStyle.Body2">@(task.Id)</RadzenText>
+							<!-- Optional additional information here if needed -->
 						</RadzenColumn>
 						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
-							<RadzenButton Text="View Details" Style="width: 100%" />
+							<span class="material-symbols-outlined radio-check radio-unchecked"
+								  @onclick="() => MarkAsCompleted(task)">radio_button_unchecked</span>
+							<span class="material-symbols-outlined radio-check radio-checked">radio_button_checked</span>
 						</RadzenColumn>
 					</RadzenRow>
 				</RadzenCard>
@@ -42,11 +45,12 @@
 							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
 						</RadzenColumn>
 						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
-							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-mb-0">Card ID</RadzenText>
-							<RadzenText TextStyle="TextStyle.Body2">@(task.Id)</RadzenText>
+							<!-- Optional additional information here if needed -->
 						</RadzenColumn>
 						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
-							<RadzenButton Text="View Details" Style="width: 100%" />
+							<!-- Uncheck Icon to Move Task Back to Active -->
+							<span class="material-symbols-outlined radio-check"
+								  @onclick="() => UnmarkAsCompleted(task)">radio_button_checked</span>
 						</RadzenColumn>
 					</RadzenRow>
 				</RadzenCard>
@@ -59,6 +63,34 @@
 	.product-title {
 		min-height: 72px;
 		background-color: var(--rz-secondary-lighter);
+	}
+
+	.radio-check {
+		font-size: 30px;
+		cursor: pointer;
+		transition: opacity 0.3s;
+	}
+
+	.radio-unchecked {
+		opacity: 1;
+	}
+
+	.radio-checked {
+		opacity: 0;
+		color: var(--rz-primary);
+		position: absolute;
+	}
+
+	.radio-check:hover .radio-unchecked {
+		opacity: 0;
+	}
+
+	.radio-check:hover .radio-checked {
+		opacity: 1;
+	}
+
+	.rz-p-4 {
+		padding: 0.5rem; /* Reduced padding */
 	}
 </style>
 
@@ -74,5 +106,29 @@
 		var allTasks = await dbContext.KertuCards.Where(kc => kc.Name != null).ToListAsync();
 		activeTasks = allTasks.Where(t => !t.IsCompleted).ToList();
 		completedTasks = allTasks.Where(t => t.IsCompleted).ToList();
+	}
+
+	private async Task MarkAsCompleted(KertuCard task)
+	{
+		// Update the task's completion status
+		task.IsCompleted = true;
+		dbContext.KertuCards.Update(task);
+		await dbContext.SaveChangesAsync();
+
+		// Refresh the lists
+		activeTasks.Remove(task);
+		completedTasks.Add(task);
+	}
+
+	private async Task UnmarkAsCompleted(KertuCard task)
+	{
+		// Update the task's completion status
+		task.IsCompleted = false;
+		dbContext.KertuCards.Update(task);
+		await dbContext.SaveChangesAsync();
+
+		// Refresh the lists
+		completedTasks.Remove(task);
+		activeTasks.Add(task);
 	}
 }
