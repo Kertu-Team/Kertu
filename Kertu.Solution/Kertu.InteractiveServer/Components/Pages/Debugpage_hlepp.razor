@@ -41,11 +41,10 @@
         card2.Name = "Card2";
         card2.Description = "Description2";
         card2.Owner = currentUser;
-        Models.Card card3 = new();
+        Models.TaskCard card3 = new();
         card3.Name = "Card3";
         card3.Description = "Description3";
         card3.Owner = currentUser;
-        card3.IsTask = true;
         Models.Card card4 = new();
         card4.Name = "Card4";
         card4.Owner = currentUser;
@@ -87,7 +86,6 @@
         task1.Name = "Task1";
         task1.Description = "Description1";
         task1.Owner = currentUser;
-        task1.IsTask = true;
         currentUser.UserElements.Add(task1);
 
         dbContext.SaveChanges();

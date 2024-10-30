@@ -28,6 +28,11 @@ namespace Kertu.InteractiveServer.Data
                 .HasValue<List>("List")
                 .HasValue<Board>("Board");
 
+            modelBuilder.Entity<Card>()
+                .HasDiscriminator<string>("CardType")
+                .HasValue<Card>("Card")
+                .HasValue<TaskCard>("TaskCard");
+
             // Ignore abstract Element table generation
             modelBuilder.Entity<Element>().ToTable("Elements").HasKey(e => e.Id);
         }

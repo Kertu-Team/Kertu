@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Kertu.InteractiveServer.Data.Models.Elements;
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Models = Kertu.InteractiveServer.Data.Models.Elements;
@@ -9,7 +10,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
     {
         string _title = string.Empty;
         List<Models.Card> _active = [];
-        List<Models.Card> _completed = [];
+        List<Models.TaskCard> _completed = [];
 
         [Parameter]
         public required string Id { get; set; }
@@ -20,34 +21,31 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
             _title = list.Name;
 
-            // Separate active and completed lists
+            // Separate active cards (includes both TaskCard and Card) and completed task cards
             _active = list.Children
-                .Where(card => !card.IsTask || !card.IsCompleted)
+                .Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted)
                 .ToList();
 
             _completed = list.Children
-                .Where(card => card.IsTask && card.IsCompleted)
+                .OfType<TaskCard>()
+                .Where(task => task.IsCompleted)
                 .ToList();
         }
 
-        async Task MarkAsCompleted(Models.Card task)
+        async Task MarkAsCompleted(Models.TaskCard task)
         {
-            // Update the task's completion status
             task.IsCompleted = true;
             await dbContext.SaveChangesAsync();
 
-            // Refresh the lists
             _active.Remove(task);
             _completed.Add(task);
         }
 
-        async Task UnmarkAsCompleted(Models.Card task)
+        async Task UnmarkAsCompleted(Models.TaskCard task)
         {
-            // Update the task's completion status
             task.IsCompleted = false;
             await dbContext.SaveChangesAsync();
 
-            // Refresh the lists
             _completed.Remove(task);
             _active.Add(task);
         }
