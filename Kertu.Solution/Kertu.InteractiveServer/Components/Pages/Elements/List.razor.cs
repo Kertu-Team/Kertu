@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Models = Kertu.InteractiveServer.Data.Models.Elements;
 
@@ -7,17 +6,28 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 {
     public partial class List : ComponentBase
     {
-        List<Models.Card> _activeTasks = [];
-        List<Models.Card> _completedTasks = [];
+        [Parameter]
+        public required string Id { get; set; }
+        int IdValue => int.Parse(Id);
 
-        protected override async Task OnInitializedAsync()
+        string _title = string.Empty;
+        List<Models.Card> _active = [];
+        List<Models.Card> _completed = [];
+
+        protected override void OnInitialized()
         {
-            await base.OnInitializedAsync();
+            //Models.List list = dbContext.Elements.Find(IdValue) as Models.List;
+            // _title = 
+            List<Models.Card> list = [.. dbContext.Cards.Where(kc => kc.Name != null)];
 
-            // Fetch and filter tasks based on completion status
-            var allTasks = await dbContext.Cards.Where(kc => kc.Name != null).ToListAsync();
-            _activeTasks = allTasks.Where(t => !t.IsCompleted).ToList();
-            _completedTasks = allTasks.Where(t => t.IsCompleted).ToList();
+            // Separate active and completed lists
+            _active = list//.Children
+                .Where(card => !card.IsTask || !card.IsCompleted)
+                .ToList();
+
+            _completed = list//.Children
+                .Where(card => card.IsTask && card.IsCompleted)
+                .ToList();
         }
 
         private async Task MarkAsCompleted(Models.Card task)
@@ -28,8 +38,8 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             await dbContext.SaveChangesAsync();
 
             // Refresh the lists
-            _activeTasks.Remove(task);
-            _completedTasks.Add(task);
+            _active.Remove(task);
+            _completed.Add(task);
         }
 
         private async Task UnmarkAsCompleted(Models.Card task)
@@ -40,8 +50,13 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             await dbContext.SaveChangesAsync();
 
             // Refresh the lists
-            _completedTasks.Remove(task);
-            _activeTasks.Add(task);
+            _completed.Remove(task);
+            _active.Add(task);
+        }
+
+        private async Task Open(Models.Card card)
+        {
+            await Task.Run(() => navigationManager.NavigateTo($"/card/{card.Id}", true));
         }
     }
 }

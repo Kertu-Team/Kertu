@@ -43,9 +43,9 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 NavigationManager.NavigateTo($"/card/{card.Id}", true);
             }
-            else if (item.Element is List)
+            else if (item.Element is List list)
             {
-                //clicked list
+                NavigationManager.NavigateTo($"/list/{list.Id}", true);
             }
             else if (item.Element is Board)
             {

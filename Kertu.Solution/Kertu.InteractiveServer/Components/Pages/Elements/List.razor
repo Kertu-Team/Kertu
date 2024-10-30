@@ -1,91 +1,52 @@
-﻿@page "/list"
+﻿@page "/list/{Id}"
+
 @using Models = Kertu.InteractiveServer.Data.Models.Elements
 @using Microsoft.EntityFrameworkCore
 @using Data
-@inject ApplicationDbContext dbContext
 
-<!-- Include Material Icons -->
+@inject ApplicationDbContext dbContext
+@inject NavigationManager navigationManager
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-<RadzenStack Gap="1rem">
-	<!-- Tasks List Section -->
-	<RadzenCard Variant="Variant.Outlined">
-		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Tasks</RadzenText>
-		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
-						Data="@_activeTasks" TItem="Models.Card" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
-			<Template Context="task">
-				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
-					<RadzenRow Gap="0">
-						<RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
-							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
-						</RadzenColumn>
-						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
-							<!-- Optional additional information here if needed -->
-						</RadzenColumn>
-						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
-							<span class="material-symbols-outlined radio-check radio-unchecked"
-								  @onclick="() => MarkAsCompleted(task)">radio_button_unchecked</span>
-							<span class="material-symbols-outlined radio-check radio-checked">radio_button_checked</span>
-						</RadzenColumn>
-					</RadzenRow>
-				</RadzenCard>
-			</Template>
-		</RadzenDataList>
-	</RadzenCard>
+<RadzenText TagName="TagName.H2">@_title</RadzenText>
+<RadzenDataList Data="@_active" TItem="Models.Card" >
+    <Template Context="card">
+        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(card)">
+            @if (card.IsTask)
+            {
+            <span class="material-symbols-outlined radio-check"
+                  @onclick="() => MarkAsCompleted(card)">radio_button_unchecked</span>
+            }
+            <RadzenText Style="margin: 0">@card.Name</RadzenText>
+        </RadzenStack>
+    </Template>
+</RadzenDataList>
 
-	<!-- Completed Tasks List Section -->
-	<RadzenCard Variant="Variant.Outlined">
-		<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H4" class="rz-mb-2">Completed Tasks</RadzenText>
-		<RadzenDataList AllowVirtualization="true" Style="height:400px;overflow:auto;"
-						Data="@_completedTasks" TItem="Models.Card" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
-			<Template Context="task">
-				<RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
-					<RadzenRow Gap="0">
-						<RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
-							<RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-on-secondary-lighter">@(task.Name)</RadzenText>
-						</RadzenColumn>
-						<RadzenColumn Size="12" SizeLG="7" class="rz-p-4">
-							<!-- Optional additional information here if needed -->
-						</RadzenColumn>
-						<RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
-							<!-- Uncheck Icon to Move Task Back to Active -->
-							<span class="material-symbols-outlined radio-check"
-								  @onclick="() => UnmarkAsCompleted(task)">radio_button_checked</span>
-						</RadzenColumn>
-					</RadzenRow>
-				</RadzenCard>
-			</Template>
-		</RadzenDataList>
-	</RadzenCard>
-</RadzenStack>
+<RadzenText TagName="TagName.H4">Completed</RadzenText>
+<RadzenDataList Data="@_completed" TItem="Models.Card">
+    <Template Context="task">
+        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(task)">
+            <span class="material-symbols-outlined radio-check"
+                  @onclick="() => UnmarkAsCompleted(task)">radio_button_checked</span>
+            <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
+        </RadzenStack>
+    </Template>
+</RadzenDataList>
 
 <style>
-	.product-title {
-		min-height: 72px;
-		background-color: var(--rz-secondary-lighter);
-	}
+    .radio-check {
+        font-size: 28px;
+        color: #888;
+        transition: color 0.2s;
+    }
 
-	.radio-check {
-		font-size: 24px;
-		cursor: pointer;
-		transition: opacity 0.3s;
-	}
+        .radio-check:hover {
+            color: var(--rz-primary);
+        }
 
-	.radio-unchecked {
-		opacity: 1;
-	}
-
-	.radio-checked {
-		opacity: 0;
-		color: var(--rz-primary);
-		position: absolute;
-	}
-
-	.radio-check:hover .radio-unchecked {
-		opacity: 0;
-	}
-
-	.radio-check:hover .radio-checked {
-		opacity: 1;
-	}
+    .completed-text {
+        color: #888;
+        text-decoration: line-through;
+    }
 </style>

@@ -86,6 +86,13 @@
         currentUser.UserElements.Add(board1);
         currentUser.UserElements.Add(card7);
 
+        Models.Card task1 = new();
+        task1.Name = "Task1";
+        task1.Description = "Description1";
+        task1.Owner = currentUser;
+        task1.IsTask = true;
+        currentUser.UserElements.Add(task1);
+
         dbContext.SaveChanges();
     }
 }
