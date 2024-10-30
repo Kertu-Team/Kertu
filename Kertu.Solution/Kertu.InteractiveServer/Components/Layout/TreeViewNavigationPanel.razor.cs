@@ -13,7 +13,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         [CascadingParameter]
         private HttpContext HttpContext { get; set; } = default!;
 
-        List<TreeViewItem> _treeViewItems = [];
+        readonly List<TreeViewItem> _treeViewItems = [];
         RadzenTree _tree = new();
         object _selection;
 

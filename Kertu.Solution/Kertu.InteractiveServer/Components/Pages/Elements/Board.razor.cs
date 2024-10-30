@@ -10,8 +10,8 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         // The new task name entered by the user
         private string? _newTaskName;
         // Filter items by zone value
-        Func<MyTask, RadzenDropZone<MyTask>, bool> _itemSelector = (item, zone) => item.Status == (Status)zone.Value && item.Status != Status.Deleted;
-        Func<RadzenDropZoneItemEventArgs<MyTask>, bool> _canDrop = request =>
+        readonly Func<MyTask, RadzenDropZone<MyTask>, bool> _itemSelector = (item, zone) => item.Status == (Status)zone.Value && item.Status != Status.Deleted;
+        readonly Func<RadzenDropZoneItemEventArgs<MyTask>, bool> _canDrop = request =>
             // Allow item drop only in the same zone, in "Deleted" zone or in the next/previous zone.
             request.FromZone == request.ToZone || (Status)request.ToZone.Value == Status.Deleted ||
                    Math.Abs((int)request.Item.Status - (int)request.ToZone.Value) == 1;
