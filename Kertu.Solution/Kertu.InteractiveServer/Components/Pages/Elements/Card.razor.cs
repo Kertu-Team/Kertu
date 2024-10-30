@@ -17,7 +17,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 
         protected override void OnInitialized()
         {
-            _card = dbContext.Elements.Find(IdValue) as Models.Card;
+            _card = dbContext.Cards.Find(IdValue);
             if (_card is null)
             {
                 return;
