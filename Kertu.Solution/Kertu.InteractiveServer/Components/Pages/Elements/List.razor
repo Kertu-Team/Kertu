@@ -7,16 +7,13 @@
 @inject ApplicationDbContext dbContext
 @inject NavigationManager navigationManager
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
-<RadzenDataList Data="@_active" TItem="Models.Card" >
+<RadzenDataList Data="@_active" TItem="Models.Card">
     <Template Context="card">
         <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(card)">
             @if (card.IsTask)
             {
-            <span class="material-symbols-outlined radio-check"
-                  @onclick="() => MarkAsCompleted(card)">radio_button_unchecked</span>
+                <RadzenIcon Icon="radio_button_unchecked" class="radio-check" @onclick="() => MarkAsCompleted(card)" />
             }
             <RadzenText Style="margin: 0">@card.Name</RadzenText>
         </RadzenStack>
@@ -27,8 +24,7 @@
 <RadzenDataList Data="@_completed" TItem="Models.Card">
     <Template Context="task">
         <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(task)">
-            <span class="material-symbols-outlined radio-check"
-                  @onclick="() => UnmarkAsCompleted(task)">radio_button_checked</span>
+            <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
             <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
         </RadzenStack>
     </Template>
@@ -36,7 +32,6 @@
 
 <style>
     .radio-check {
-        font-size: 28px;
         color: #888;
         transition: color 0.2s;
     }
