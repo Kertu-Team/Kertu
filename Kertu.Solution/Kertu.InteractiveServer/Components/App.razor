@@ -27,30 +27,3 @@
 </body>
 
 </html>
-
-@code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    [Inject]
-    private ThemeService? ThemeService { get; set; }
-
-    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
-        ? null
-        : InteractiveServer;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        if (HttpContext != null)
-        {
-            var theme = HttpContext.Request.Cookies["ApplicationTheme"];
-
-            if (!string.IsNullOrEmpty(theme) && ThemeService is not null)
-            {
-                ThemeService.SetTheme(theme, false);
-            }
-        }
-    }
-}

@@ -11,7 +11,7 @@
 @inject DialogService DialogService
 
 <RadzenStack class="rz-m-3">
-    <RadzenTree Data="@treeViewItems" @ref=tree Change="OnChange" @bind-Value=@selection ItemContextMenu="TreeItemContextMenu">
+    <RadzenTree Data="@_treeViewItems" @ref=_tree Change="OnChange" @bind-Value=@_selection ItemContextMenu="TreeItemContextMenu">
         <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true)>
             <Template Context="context">
                 <RadzenIcon Icon=@((context.Value as TreeViewItem).GetIcon()) />
@@ -23,86 +23,6 @@
 
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    List<TreeViewItem> treeViewItems = new();
-    RadzenTree tree = new();
-
-    ApplicationUser currentUser;
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        HttpContext = httpContextAccessor.HttpContext;
-        currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
-        var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == currentUser).UserElements;
-        foreach (var element in elements)
-        {
-            TreeViewItem treeViewItem = new(element);
-            var fromDB = dbContext.Elements.Where(ke => ke == element);
-            treeViewItem.Children = LoadTree(fromDB);
-            treeViewItems.Add(treeViewItem);
-        }
-    }
-
-    object selection;
-    private void OnChange()
-    {
-        TreeViewItem item = selection as TreeViewItem;
-        if (item.Element is Card card)
-        {
-            NavigationManager.NavigateTo($"/card/{card.Id}", true);
-        }
-        else if (item.Element is List list)
-        {
-            //clicked list
-        }
-        else if (item.Element is Board board)
-        {
-            //clicked card board
-        }
-    }
-
-
-    void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
-    {
-        ContextMenuService.Open(args,
-        new List<ContextMenuItem> {
-                new ContextMenuItem(){ Text = "Add card", Value = 11, Icon = "post_add" },
-                new ContextMenuItem(){ Text = "Add list", Value = 12, Icon = "splitscreen_add" },
-                new ContextMenuItem(){ Text = "Add board", Value = 13, Icon = "dashboard_customize" },
-                new ContextMenuItem(){ Text = "Rename", Value = 2, Icon = "edit" },
-                new ContextMenuItem(){ Text = "Delete", Value = 3, Icon = "delete_forever" },
-                                },
-        (e) =>
-        {
-            switch (e.Value)
-            {
-                case 11:
-
-                    break;
-
-                case 12:
-
-                    break;
-
-                case 13:
-
-                    break;
-
-                case 2:
-                    RenameElement((args.Value as TreeViewItem).Element);
-                    break;
-
-                case 3:
-                    DeleteElement((args.Value as TreeViewItem).Element);
-                    break;
-            }
-        }
-     );
-    }
 
     #region menu functions
     private async Task RenameElement(Element element)
@@ -120,66 +40,5 @@
     );
 
     }
-
-    private async Task DeleteElement(Element element)
-    {
-        var result = await DialogService.Confirm($"Are you sure to delete {element.Name} and all of its children?", "Confirm", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No", CloseDialogOnOverlayClick=true, CloseDialogOnEsc=true });
-
-        if(result == true)
-        {
-            CascadeDelete(dbContext.Elements.Where(ke => ke.Id == element.Id));
-
-            NavigationManager.Refresh(true);
-        }
-    }
-    void CascadeDelete(IQueryable<Element> parent)
-    {
-        List<Element> children = new List<Element>();
-        if (parent.First() is List)
-        {
-            var list = parent.Cast<List>();
-            children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
-        }
-        else if (parent.First() is Board)
-        {
-            var board = parent.Cast<Board>();
-            children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
-        }
-
-        foreach (var child in children)
-        {
-            var fromDB = dbContext.Elements.Where(ke => ke == child);
-            CascadeDelete(fromDB);
-        }
-        dbContext.Remove(parent.First());
-        dbContext.SaveChanges();
-    }
     #endregion
-
-    private List<TreeViewItem> LoadTree(IQueryable<Element> parent)
-    {
-        List<TreeViewItem> treeViewItems = new();
-        List<Element> children = new List<Element>();
-        if (parent.First() is List)
-        {
-            var list = parent.Cast<List>();
-            children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
-        }
-        else if (parent.First() is Board)
-        {
-            var board = parent.Cast<Board>();
-            children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
-        }
-
-        foreach (var child in children)
-        {
-            TreeViewItem item = new(child);
-            var fromDB = dbContext.Elements.Where(ke => ke == child);
-            item.Children = LoadTree(fromDB);
-            treeViewItems.Add(item);
-        }
-
-        return treeViewItems;
-    }
-
 }

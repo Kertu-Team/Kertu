@@ -35,7 +35,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _busy = true;
             _card.Name = _title;
             _card.Description = _description;
-            await Task.Run(dbContext.SaveChanges);
+            _ = await Task.Run(dbContext.SaveChanges);
             notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Duration = 4000 });
             _busy = false;
         }

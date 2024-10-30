@@ -1,12 +1,10 @@
 ﻿@page "/board"
 @inject IJSRuntime jsRuntime
 
-
-
-<RadzenDropZoneContainer TItem="MyTask" Data="data"
-                         ItemSelector="@ItemSelector"
+<RadzenDropZoneContainer TItem="MyTask" Data="_data"
+                         ItemSelector="@_itemSelector"
                          ItemRender="@OnItemRender"
-                         CanDrop="@CanDrop"
+                         CanDrop="@_canDrop"
                          Drop="@OnDrop">
     <ChildContent>
         <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-p-12">
@@ -17,9 +15,9 @@
                 <Footer>
                     <div>
                         <!--  task name -->
-                        <RadzenTextBox Placeholder="Enter task name" @bind-Value="newTaskName" Style="width: 100%;" />
+                        <RadzenTextBox Placeholder="Enter task name" @bind-Value="_newTaskName" Style="width: 100%;" />
                         <!--  add new task -->
-                        <RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" Disabled="@string.IsNullOrWhiteSpace(newTaskName)" />
+                        <RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" Disabled="@string.IsNullOrWhiteSpace(_newTaskName)" />
                     </div>
                 </Footer>
             </RadzenDropZone>
@@ -49,146 +47,5 @@
 </style>
 
 @code {
-    // The new task name entered by the user
-    private string? newTaskName;
-
-    // Filter items by zone value
-    Func<MyTask, RadzenDropZone<MyTask>, bool> ItemSelector = (item, zone) => item.Status == (Status)zone.Value && item.Status != Status.Deleted;
-
-    Func<RadzenDropZoneItemEventArgs<MyTask>, bool> CanDrop = request =>
-    {
-        // Allow item drop only in the same zone, in "Deleted" zone or in the next/previous zone.
-        return request.FromZone == request.ToZone || (Status)request.ToZone.Value == Status.Deleted ||
-               Math.Abs((int)request.Item.Status - (int)request.ToZone.Value) == 1;
-    };
-
-    void OnItemRender(RadzenDropZoneItemRenderEventArgs<MyTask> args)
-    {
-        // Customize item appearance
-        if (args.Item.Name == "Task2")
-        {
-            args.Attributes["draggable"] = "false";
-            args.Attributes["style"] = "cursor:not-allowed";
-            args.Attributes["class"] = "rz-card rz-variant-flat rz-background-color-primary-lighter rz-color-on-primary-lighter";
-        }
-        else
-        {
-            args.Attributes["class"] = "rz-card rz-variant-filled rz-background-color-primary-light rz-color-on-primary-light";
-        }
-
-        // Do not render item if deleted
-        args.Visible = args.Item.Status != Status.Deleted;
-    }
-
-    void OnDrop(RadzenDropZoneItemEventArgs<MyTask> args)
-    {
-        if (args.FromZone != args.ToZone)
-        {
-            // Update item zone
-            args.Item.Status = (Status)args.ToZone.Value;
-            SaveTasksToLocalStorage();
-        }
-
-        if (args.ToItem != null && args.ToItem != args.Item)
-        {
-            // Reorder items in same zone or place the item at specific index in new zone
-            data.Remove(args.Item);
-            data.Insert(data.IndexOf(args.ToItem), args.Item);
-            SaveTasksToLocalStorage();
-        }
-    }
-
-    IList<MyTask> data;
-
-    protected override void OnInitialized()
-    {
-        data = Enumerable.Range(0, 5)
-            .Select(i =>
-                new MyTask()
-                    {
-                        Id = i,
-                        Name = $"Task{i}",
-                        Status = i < 3 ? Status.NotStarted : Status.Started
-                    })
-            .ToList();
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadTasksFromLocalStorage();
-    }
-
-    private void CreateItem()
-    {
-        // Create a new task with the user-provided name
-        if (!string.IsNullOrWhiteSpace(newTaskName))
-        {
-            data.Add(new MyTask()
-                {
-                    Id = data.Max(t => t.Id) + 1,
-                    Name = newTaskName, // Use the entered task name
-                    Status = Status.NotStarted
-                });
-
-            // Clear the input field after creating the task
-            newTaskName = string.Empty;
-            SaveTasksToLocalStorage();
-        }
-    }
-    private async Task SaveTasksToLocalStorage()
-    {
-        await jsRuntime.InvokeVoidAsync("localStorage.clear");  // Clear localStorage before saving updated data
-
-        for (int i = 0; i < data.Count; i++)
-        {
-            var task = data[i];
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", $"task_name_{i}", task.Name);
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", $"task_status_{i}", task.Status.ToString());
-        }
-
-        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "task_count", data.Count.ToString());
-    }
-
-    private async Task LoadTasksFromLocalStorage()
-    {
-        var taskCountString = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "task_count");
-        if (int.TryParse(taskCountString, out var taskCount) && taskCount > 0)
-        {
-            data = new List<MyTask>();
-
-            for (int i = 0; i < taskCount; i++)
-            {
-                var name = await jsRuntime.InvokeAsync<string>("localStorage.getItem", $"task_name_{i}");
-                var statusString = await jsRuntime.InvokeAsync<string>("localStorage.getItem", $"task_status_{i}");
-                if (Enum.TryParse(statusString, out Status status))
-                {
-                    data.Add(new MyTask
-                        {
-                            Id = i,
-                            Name = name,
-                            Status = status
-                        });
-                }
-            }
-        }
-        else
-        {
-            // Initialize empty list if no tasks are found in localStorage
-            data = new List<MyTask>();
-        }
-    }
-
-    public class MyTask
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public Status Status { get; set; } = Status.NotStarted;
-    }
-
-    public enum Status
-    {
-        NotStarted,
-        Started,
-        Completed,
-        Deleted
-    }
+    
 }
