@@ -8,25 +8,21 @@
 @using Kertu.InteractiveServer.Data;
 @using Models = Kertu.InteractiveServer.Data.Models.Elements;
 
-@inject ApplicationDbContext dbContext
-@inject UserManager<ApplicationUser> UserManager
-@inject Account.IdentityUserAccessor UserAccessor
+@inject Account.IdentityUserAccessor userAccessor
 @inject IHttpContextAccessor httpContextAccessor
+@inject ApplicationDbContext dbContext
 
 <h3>hlepp_debugpage</h3>
 
 <RadzenButton Text="KLIK" Click="@click"></RadzenButton>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    ApplicationUser currentUser = default!;
 
-    ApplicationUser currentUser;
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        HttpContext = httpContextAccessor.HttpContext;
-        currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        currentUser = await userAccessor.GetRequiredUserAsync(httpContextAccessor.HttpContext);
     }
 
     void click()

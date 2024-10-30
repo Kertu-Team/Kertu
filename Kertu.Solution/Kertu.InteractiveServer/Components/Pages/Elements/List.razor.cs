@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Models = Kertu.InteractiveServer.Data.Models.Elements;
 
@@ -6,30 +7,30 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 {
     public partial class List : ComponentBase
     {
-        [Parameter]
-        public required string Id { get; set; }
-        int IdValue => int.Parse(Id);
-
         string _title = string.Empty;
         List<Models.Card> _active = [];
         List<Models.Card> _completed = [];
 
-        protected override void OnInitialized()
+        [Parameter]
+        public required string Id { get; set; }
+        int IdValue => int.Parse(Id);
+
+        protected override async Task OnInitializedAsync()
         {
-            //Models.List list = dbContext.Elements.Find(IdValue) as Models.List;
-            // _title = 
+            Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
+            _title = list.Name;
 
             // Separate active and completed lists
-            _active = dbContext.Cards//.Children
+            _active = list.Children
                 .Where(card => !card.IsTask || !card.IsCompleted)
                 .ToList();
 
-            _completed = dbContext.Cards//.Children
+            _completed = list.Children
                 .Where(card => card.IsTask && card.IsCompleted)
                 .ToList();
         }
 
-        private async Task MarkAsCompleted(Models.Card task)
+        async Task MarkAsCompleted(Models.Card task)
         {
             // Update the task's completion status
             task.IsCompleted = true;
@@ -40,7 +41,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _completed.Add(task);
         }
 
-        private async Task UnmarkAsCompleted(Models.Card task)
+        async Task UnmarkAsCompleted(Models.Card task)
         {
             // Update the task's completion status
             task.IsCompleted = false;
@@ -51,7 +52,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _active.Add(task);
         }
 
-        private async Task Open(Models.Card card)
+        async Task Open(Models.Card card)
         {
             await Task.Run(() => navigationManager.NavigateTo($"/card/{card.Id}", true));
         }
