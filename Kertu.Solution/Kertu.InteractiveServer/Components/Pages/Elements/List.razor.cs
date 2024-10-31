@@ -16,20 +16,15 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         public required string Id { get; set; }
         int IdValue => int.Parse(Id);
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
             _title = list.Name;
 
             // Separate active cards (includes both TaskCard and Card) and completed task cards
-            _active = list.Children
-                .Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted)
-                .ToList();
+            _active = list.Children.Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted).ToList();
 
-            _completed = list.Children
-                .OfType<TaskCard>()
-                .Where(task => task.IsCompleted)
-                .ToList();
+            _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).ToList();
         }
 
         async Task MarkAsCompleted(Models.TaskCard task)
