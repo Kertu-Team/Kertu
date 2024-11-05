@@ -4,6 +4,7 @@
 
 @inject NavigationManager Navigation
 @inject CookieThemeService CookieThemeService
+@inject Services.UserStateService UserStateService
 
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
@@ -11,7 +12,7 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
                 @if (!IsAccountRoute)
                 {
-                    <RadzenSidebarToggle Icon="list" Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                    <RadzenSidebarToggle Icon="list" Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
                 }
                 else
                 {
@@ -35,7 +36,7 @@
         </RadzenStack>
     </RadzenHeader>
 
-    @if (sidebarExpanded)
+    @if (UserStateService.TreeViewNavigationPanelOpened)
     {
         <RadzenSidebar Responsive="false">
             <TreeViewNavigationPanel />
@@ -50,7 +51,6 @@
 </RadzenLayout>
 
 @code {
-    bool sidebarExpanded = false;
     bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
 }
 
