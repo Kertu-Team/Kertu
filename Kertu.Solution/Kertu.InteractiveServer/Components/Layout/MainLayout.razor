@@ -16,6 +16,10 @@
                     <Authorized>
                         <RadzenSidebarToggle Icon="list" Click="@(() => sidebarExpanded = !sidebarExpanded)" />
                     </Authorized>
+                    <NotAuthorized>
+                        <!-- Filler element to maintain layout consistency -->
+                        <div style="width: 16px" />
+                    </NotAuthorized>
                 </AuthorizeView>
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
                     <a href="/" class="h-100 d-flex align-items-center">

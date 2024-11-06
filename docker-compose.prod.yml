@@ -1,0 +1,5 @@
+services:
+  interactive_server:
+    image: resvith/kertu:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
