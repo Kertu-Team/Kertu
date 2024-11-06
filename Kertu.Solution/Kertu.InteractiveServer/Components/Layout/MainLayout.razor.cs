@@ -4,6 +4,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 {
     public partial class MainLayout : LayoutComponentBase, IDisposable
     {
+        bool sidebarExpanded = false;
         private string? _userEmail;
 
         protected override async Task OnInitializedAsync()

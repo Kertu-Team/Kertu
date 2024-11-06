@@ -14,7 +14,7 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
                 <AuthorizeView>
                     <Authorized>
-                        <RadzenSidebarToggle Icon="list" Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
+                        <RadzenSidebarToggle Icon="list" Click="@(() => sidebarExpanded = !sidebarExpanded)" />
                     </Authorized>
                 </AuthorizeView>
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
@@ -48,7 +48,7 @@
         </RadzenStack>
     </RadzenHeader>
 
-    @if (UserStateService.TreeViewNavigationPanelOpened)
+    @if (sidebarExpanded)
     {
         <RadzenSidebar Responsive="false">
             <TreeViewNavigationPanel />
