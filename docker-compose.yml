@@ -11,6 +11,7 @@ services:
       - postgres_volume:/var/lib/postgresql/data
 
   interactive_server:
+    image: resvith/kertu:latest
     container_name: interactive_server
     restart: unless-stopped
     depends_on:
