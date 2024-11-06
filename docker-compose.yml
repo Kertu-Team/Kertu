@@ -9,19 +9,13 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_volume:/var/lib/postgresql/data
-    ports:
-      - "5434:5432"
 
   interactive_server:
-    build:
-      context: .
-      dockerfile: Kertu.Solution/Kertu.InteractiveServer/Dockerfile
     container_name: interactive_server
     restart: unless-stopped
     depends_on:
       - postgres
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
       POSTGRES_DB: kertu
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password

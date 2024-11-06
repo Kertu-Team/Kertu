@@ -1,0 +1,9 @@
+services:
+  postgres:
+    ports:
+      - "5434:5432"
+
+  interactive_server:
+    build:
+      context: .
+      dockerfile: Kertu.Solution/Kertu.InteractiveServer/Dockerfile
