@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Kertu.InteractiveServer.Components.Layout
 {
@@ -18,6 +19,9 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         [Parameter]
         public string DarkTheme { get; set; }
+
+        [Inject]
+        public NavigationManager Navigation { get; set; }
 
         private string CurrentLightTheme =>
             LightTheme
@@ -67,6 +71,11 @@ namespace Kertu.InteractiveServer.Components.Layout
         }
 
         private string Icon => _value ? "dark_mode" : "light_mode";
+
+        void OnLinkClick()
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
 
         public void Dispose()
         {
