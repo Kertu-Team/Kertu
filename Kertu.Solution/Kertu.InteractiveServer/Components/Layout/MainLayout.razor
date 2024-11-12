@@ -14,7 +14,7 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
                 <AuthorizeView>
                     <Authorized>
-                        <RadzenSidebarToggle Icon="list" Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                        <RadzenSidebarToggle Icon="list" Click="@(() => _sidebarExpanded = !_sidebarExpanded)" />
                     </Authorized>
                     <NotAuthorized>
                         <!-- Filler element to maintain layout consistency -->
@@ -52,7 +52,7 @@
         </RadzenStack>
     </RadzenHeader>
 
-    @if (sidebarExpanded)
+    @if (_sidebarExpanded)
     {
         <RadzenSidebar Responsive="false">
             <TreeViewNavigationPanel />

@@ -1,19 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Kertu.InteractiveServer.Components.Layout
 {
     public partial class MainLayout : LayoutComponentBase, IDisposable
     {
-        bool sidebarExpanded = false;
-        private string? _userEmail;
-
-        protected override async Task OnInitializedAsync()
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            _userEmail = authState.User.Identity?.Name;
-        }
-
         [Parameter]
         public string LightTheme { get; set; }
 
@@ -21,8 +11,13 @@ namespace Kertu.InteractiveServer.Components.Layout
         public string DarkTheme { get; set; }
 
         [Inject]
-        public NavigationManager Navigation { get; set; }
+        private NavigationManager Navigation { get; set; }
 
+        string? _userEmail;
+        bool _sidebarExpanded = false;
+        string Icon => _value ? "dark_mode" : "light_mode";
+
+        private bool _value;
         private string CurrentLightTheme =>
             LightTheme
             ?? ThemeService.Theme?.ToLowerInvariant() switch
@@ -36,7 +31,6 @@ namespace Kertu.InteractiveServer.Components.Layout
                 "standard-dark" => "standard",
                 _ => ThemeService.Theme,
             };
-
         private string CurrentDarkTheme =>
             DarkTheme
             ?? ThemeService.Theme?.ToLowerInvariant() switch
@@ -51,18 +45,17 @@ namespace Kertu.InteractiveServer.Components.Layout
                 _ => ThemeService.Theme,
             };
 
-        private bool _value;
-
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            _userEmail = authState.User.Identity?.Name;
             ThemeService.ThemeChanged += OnThemeChanged;
             _value = ThemeService.Theme != CurrentDarkTheme;
         }
 
-        private void OnThemeChanged()
+        void IDisposable.Dispose()
         {
-            _value = ThemeService.Theme != CurrentDarkTheme;
-            InvokeAsync(StateHasChanged);
+            ThemeService.ThemeChanged -= OnThemeChanged;
         }
 
         void Change()
@@ -70,16 +63,15 @@ namespace Kertu.InteractiveServer.Components.Layout
             ThemeService.SetTheme(!_value ? CurrentLightTheme : CurrentDarkTheme);
         }
 
-        private string Icon => _value ? "dark_mode" : "light_mode";
-
         void OnLinkClick()
         {
             Navigation.NavigateTo("/", forceLoad: true);
         }
 
-        public void Dispose()
+        private void OnThemeChanged()
         {
-            ThemeService.ThemeChanged -= OnThemeChanged;
+            _value = ThemeService.Theme != CurrentDarkTheme;
+            InvokeAsync(StateHasChanged);
         }
     }
 }

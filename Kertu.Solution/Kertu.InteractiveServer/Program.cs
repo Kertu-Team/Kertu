@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Kertu.InteractiveServer.Components;
 using Kertu.InteractiveServer.Components.Account;
 using Kertu.InteractiveServer.Data;
@@ -48,6 +49,9 @@ builder
 
 //Radzen Components
 builder.Services.AddRadzenComponents();
+
+// Blazored local storage
+builder.Services.AddBlazoredLocalStorage();
 
 //User state service
 builder.Services.AddSingleton<UserStateService>();
