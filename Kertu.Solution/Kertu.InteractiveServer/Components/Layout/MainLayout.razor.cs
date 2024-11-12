@@ -83,11 +83,6 @@ namespace Kertu.InteractiveServer.Components.Layout
             ThemeService.SetTheme(!_value ? CurrentLightTheme : CurrentDarkTheme);
         }
 
-        void OnLinkClick()
-        {
-            Navigation.NavigateTo("/", forceLoad: true);
-        }
-
         private void OnThemeChanged()
         {
             _value = ThemeService.Theme != CurrentDarkTheme;
