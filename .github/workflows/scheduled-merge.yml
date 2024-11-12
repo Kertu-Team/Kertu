@@ -6,6 +6,8 @@ on:
     - cron: '0 6 * * 1'
   workflow_dispatch:
 
+permissions: write-all
+
 jobs:
   merge-branches:
     runs-on: ubuntu-latest
