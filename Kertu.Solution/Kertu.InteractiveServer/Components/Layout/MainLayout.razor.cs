@@ -21,6 +21,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         private Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; }
 
         string? _userEmail;
+        bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
         string Icon => _value ? "dark_mode" : "light_mode";
 
         private bool _value;

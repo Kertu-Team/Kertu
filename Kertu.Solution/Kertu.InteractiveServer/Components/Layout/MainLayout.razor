@@ -12,15 +12,15 @@
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100" JustifyContent="JustifyContent.SpaceBetween">
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
-                <AuthorizeView>
-                    <Authorized>
-                        <RadzenSidebarToggle Icon="list" Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
-                    </Authorized>
-                    <NotAuthorized>
-                        <!-- Filler element to maintain layout consistency -->
-                        <div style="width: 16px" />
-                    </NotAuthorized>
-                </AuthorizeView>
+                @if (!IsAccountRoute)
+                {
+                    <RadzenSidebarToggle Icon="list" Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
+                }
+                else
+                {
+                    <!-- Filler element to maintain layout consistency -->
+                    <div style="width: 16px" />
+                }
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100">
                     <a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
                         <img src="/favicon/favicon-48x48.png" alt="App logo" width="32" />
@@ -31,23 +31,22 @@
                 </RadzenStack>
             </RadzenStack>
 
-            <AuthorizeView>
-                <Authorized>
-                    <RadzenProfileMenu>
-                        <Template>
-                            <RadzenGravatar Email="@_userEmail">
-                            </RadzenGravatar>
-                        </Template>
-                        <ChildContent>
-                            <div @onclick="() => Change()">
-                                <RadzenProfileMenuItem Text="Switch Theme" Icon=@Icon></RadzenProfileMenuItem>
-                            </div>
-                            <RadzenProfileMenuItem Text="Manage Account" Path="Account/Manage" Icon="account_circle"></RadzenProfileMenuItem>
-                            @*<RadzenProfileMenuItem Text="Logout" Path="Account/Logout" Icon="logout"></RadzenProfileMenuItem>}*@
-                        </ChildContent>
-                    </RadzenProfileMenu>
-                </Authorized>
-            </AuthorizeView>
+            @if (!IsAccountRoute)
+            {
+                <RadzenProfileMenu>
+                    <Template>
+                        <RadzenGravatar Email="@_userEmail">
+                        </RadzenGravatar>
+                    </Template>
+                    <ChildContent>
+                        <div @onclick="() => Change()">
+                            <RadzenProfileMenuItem Text="Switch Theme" Icon=@Icon></RadzenProfileMenuItem>
+                        </div>
+                        <RadzenProfileMenuItem Text="Manage Account" Path="Account/Manage" Icon="account_circle"></RadzenProfileMenuItem>
+                        @*<RadzenProfileMenuItem Text="Logout" Path="Account/Logout" Icon="logout"></RadzenProfileMenuItem>}*@
+                    </ChildContent>
+                </RadzenProfileMenu>
+            }
 
         </RadzenStack>
     </RadzenHeader>
