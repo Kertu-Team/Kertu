@@ -11,7 +11,7 @@
 @inject Account.IdentityUserAccessor userAccessor
 @inject IHttpContextAccessor httpContextAccessor
 @inject ApplicationDbContext dbContext
-
+@inject NavigationManager NavigationManager
 
 <h3>hlepp_debugpage</h3>
 
@@ -24,8 +24,6 @@
     {
         base.OnInitialized();
         currentUser = dbContext.Users.Single(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name);
-
-        
     }
 
     void click()
@@ -92,5 +90,6 @@
         currentUser.UserElements.Add(task1);
 
         dbContext.SaveChanges();
+        NavigationManager.Refresh(true);
     }
 }
