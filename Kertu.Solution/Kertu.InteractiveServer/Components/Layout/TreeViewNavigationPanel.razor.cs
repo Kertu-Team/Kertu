@@ -18,12 +18,13 @@ namespace Kertu.InteractiveServer.Components.Layout
         object _selection;
 
         ApplicationUser _currentUser;
-        protected override async Task OnInitializedAsync()
+
+        protected override void OnInitialized()
         {
-            await base.OnInitializedAsync();
+            base.OnInitialized();
 
             HttpContext = httpContextAccessor.HttpContext;
-            _currentUser = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            _currentUser = dbContext.Users.Single(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name);
 
             var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == _currentUser).UserElements;
             foreach (var element in elements)
@@ -35,9 +36,49 @@ namespace Kertu.InteractiveServer.Components.Layout
             }
         }
 
+        private bool ShouldExpand(object data)
+        {
+            if (UserStateService.LastOpenedElement != null)
+            {
+                var element = (data as TreeViewItem).Element;
+                return SearchChildren(dbContext.Elements.Where(e => e.Id == element.Id));
+            }
+            return false;
+        }
+
+        private bool SearchChildren(IQueryable<Element> parent)
+        {
+            List<Element> children = [];
+            if (parent.First() is List)
+            {
+                var list = parent.Cast<List>();
+                children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+            }
+            else if (parent.First() is Board)
+            {
+                var board = parent.Cast<Board>();
+                children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+            }
+
+            foreach (var child in children)
+            {
+                if (child.Id == UserStateService.LastOpenedElement.Id)
+                    return true;
+                else
+                {
+                    var fromDB = dbContext.Elements.Where(ke => ke == child);
+                    if (SearchChildren(fromDB))
+                        return true;
+                }
+            }
+            return false;
+        }
+
         private void OnChange()
         {
             TreeViewItem item = _selection as TreeViewItem;
+
+            UserStateService.LastOpenedElement = item.Element;
 
             if (item.Element is Card card)
             {
@@ -55,45 +96,81 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
         {
-            ContextMenuService.Open(args,
-            [
-                new ContextMenuItem(){ Text = "Add card", Value = 11, Icon = "post_add" },
-                new ContextMenuItem(){ Text = "Add list", Value = 12, Icon = "splitscreen_add" },
-                new ContextMenuItem(){ Text = "Add board", Value = 13, Icon = "dashboard_customize" },
-                new ContextMenuItem(){ Text = "Rename", Value = 2, Icon = "edit" },
-                new ContextMenuItem(){ Text = "Delete", Value = 3, Icon = "delete_forever" },
-                                    ],
-            async (e) =>
-            {
-                switch (e.Value)
+            ContextMenuService.Open(
+                args,
+                [
+                    new ContextMenuItem()
+                    {
+                        Text = "Add card",
+                        Value = 11,
+                        Icon = "post_add",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Add list",
+                        Value = 12,
+                        Icon = "splitscreen_add",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Add board",
+                        Value = 13,
+                        Icon = "dashboard_customize",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Rename",
+                        Value = 2,
+                        Icon = "edit",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Delete",
+                        Value = 3,
+                        Icon = "delete_forever",
+                    },
+                ],
+                async (e) =>
                 {
-                    case 11:
+                    switch (e.Value)
+                    {
+                        case 11:
 
-                        break;
+                            break;
 
-                    case 12:
+                        case 12:
 
-                        break;
+                            break;
 
-                    case 13:
+                        case 13:
 
-                        break;
+                            break;
 
-                    case 2:
-                        await RenameElement((args.Value as TreeViewItem).Element);
-                        break;
+                        case 2:
+                            await RenameElement((args.Value as TreeViewItem).Element);
+                            break;
 
-                    case 3:
-                        await DeleteElement((args.Value as TreeViewItem).Element);
-                        break;
+                        case 3:
+                            await DeleteElement((args.Value as TreeViewItem).Element);
+                            break;
+                    }
                 }
-            }
-         );
+            );
         }
 
         private async Task DeleteElement(Element element)
         {
-            bool? result = await DialogService.Confirm($"Are you sure to delete {element.Name} and all of its children?", "Confirm", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No", CloseDialogOnOverlayClick = true, CloseDialogOnEsc = true });
+            bool? result = await DialogService.Confirm(
+                $"Are you sure to delete {element.Name} and all of its children?",
+                "Confirm",
+                new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    CloseDialogOnOverlayClick = true,
+                    CloseDialogOnEsc = true,
+                }
+            );
 
             if (result == true)
             {
@@ -102,6 +179,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                 NavigationManager.Refresh(true);
             }
         }
+
         void CascadeDelete(IQueryable<Element> parent)
         {
             List<Element> children = [];

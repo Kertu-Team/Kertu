@@ -9,10 +9,11 @@
 @inject NavigationManager NavigationManager
 @inject ContextMenuService ContextMenuService
 @inject DialogService DialogService
+@inject Services.UserStateService UserStateService
 
 <RadzenStack class="rz-m-3">
     <RadzenTree Data="@_treeViewItems" @ref=_tree Change="OnChange" @bind-Value=@_selection ItemContextMenu="TreeItemContextMenu">
-        <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true)>
+        <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true) Expanded="@ShouldExpand">
             <Template Context="context">
                 <RadzenIcon Icon=@((context.Value as TreeViewItem).GetIcon()) />
                 <b style="user-select: none;">@context.Text</b>
