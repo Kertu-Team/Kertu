@@ -39,6 +39,28 @@
         </RadzenStack>
     </RadzenStack>
     );
+    }
+
+    private async Task AddElementDialog(Element parent, Type type)
+    {
+        string title = $"";
+        if (type == typeof(Card)) title += "Card";
+        else if (type == typeof(List)) title += "List";
+        else if (type == typeof(Board)) title += "Board";
+
+        string name = $"New {title}";
+
+        var result = await DialogService.OpenAsync($"Add new {title}", d =>
+    @<RadzenStack Gap="1.5rem">
+        <RadzenTextBox @bind-Value="name" />
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Ok" Click="() => {AddElement(parent, type, name); d.Close(null);}" Style="width: 80px;" />
+                <RadzenButton Text="Cancel" Click="() => d.Close(null)" ButtonStyle="ButtonStyle.Light" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
 
     }
     #endregion

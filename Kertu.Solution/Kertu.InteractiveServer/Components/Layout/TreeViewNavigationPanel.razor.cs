@@ -96,8 +96,79 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
         {
-            ContextMenuService.Open(
-                args,
+            Action<MenuItemEventArgs> action = async (e) =>
+            {
+                switch (e.Value)
+                {
+                    case 11:
+                        await AddElementDialog((args.Value as TreeViewItem).Element, typeof(Card));
+                        break;
+
+                    case 12:
+                        await AddElementDialog((args.Value as TreeViewItem).Element, typeof(List));
+                        break;
+
+                    case 13:
+                        await AddElementDialog((args.Value as TreeViewItem).Element, typeof(Board));
+                        break;
+
+                    case 2:
+                        await RenameElement((args.Value as TreeViewItem).Element);
+                        break;
+
+                    case 3:
+                        await DeleteElement((args.Value as TreeViewItem).Element);
+                        break;
+                }
+            };
+
+            List<ContextMenuItem> items = new();
+
+            if ((args.Value as TreeViewItem).Element is Card)
+            {
+                items =
+                [
+                    new ContextMenuItem()
+                    {
+                        Text = "Rename",
+                        Value = 2,
+                        Icon = "edit",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Delete",
+                        Value = 3,
+                        Icon = "delete_forever",
+                    },
+                ];
+            }
+            else if ((args.Value as TreeViewItem).Element is List)
+            {
+                items =
+                [
+                    new ContextMenuItem()
+                    {
+                        Text = "Add card",
+                        Value = 11,
+                        Icon = "post_add",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Rename",
+                        Value = 2,
+                        Icon = "edit",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Delete",
+                        Value = 3,
+                        Icon = "delete_forever",
+                    },
+                ];
+            }
+            else if ((args.Value as TreeViewItem).Element is Board)
+            {
+                items =
                 [
                     new ContextMenuItem()
                     {
@@ -129,33 +200,45 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Value = 3,
                         Icon = "delete_forever",
                     },
-                ],
-                async (e) =>
-                {
-                    switch (e.Value)
-                    {
-                        case 11:
+                ];
+            }
 
-                            break;
+            ContextMenuService.Open(args, items, action);
+        }
 
-                        case 12:
+        private void AddElement(Element parent, Type type, string name)
+        {
+            Element element;
+            if (type == typeof(Card))
+            {
+                element = new Card();
+            }
+            else if (type == typeof(List))
+            {
+                element = new List();
+            }
+            else
+            {
+                element = new Board();
+            }
 
-                            break;
+            element.Name = name;
+            element.Owner = _currentUser;
 
-                        case 13:
+            dbContext.Add(element);
+            dbContext.SaveChanges();
 
-                            break;
-
-                        case 2:
-                            await RenameElement((args.Value as TreeViewItem).Element);
-                            break;
-
-                        case 3:
-                            await DeleteElement((args.Value as TreeViewItem).Element);
-                            break;
-                    }
-                }
-            );
+            if (parent == null)
+            {
+                _currentUser.UserElements.Add(element);
+            }
+            else
+            {
+                element.AddTo(parent);
+            }
+            dbContext.SaveChanges();
+            UserStateService.LastOpenedElement = element;
+            NavigationManager.Refresh(true);
         }
 
         private async Task DeleteElement(Element element)
