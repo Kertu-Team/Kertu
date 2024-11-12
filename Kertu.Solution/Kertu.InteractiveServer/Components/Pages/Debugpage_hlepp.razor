@@ -12,6 +12,7 @@
 @inject IHttpContextAccessor httpContextAccessor
 @inject ApplicationDbContext dbContext
 
+
 <h3>hlepp_debugpage</h3>
 
 <RadzenButton Text="KLIK" Click="@click"></RadzenButton>
@@ -19,10 +20,12 @@
 @code {
     ApplicationUser currentUser = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await base.OnInitializedAsync();
-        currentUser = await userAccessor.GetRequiredUserAsync(httpContextAccessor.HttpContext);
+        base.OnInitialized();
+        currentUser = dbContext.Users.Single(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name);
+
+        
     }
 
     void click()
