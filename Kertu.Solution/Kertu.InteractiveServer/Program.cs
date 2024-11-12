@@ -56,6 +56,9 @@ builder.Services.AddBlazoredLocalStorage();
 //User state service
 builder.Services.AddSingleton<UserStateService>();
 
+// Navigation state service
+builder.Services.AddSingleton<NavigationStateService>();
+
 //App cookies
 builder.Services.AddRadzenCookieThemeService(options =>
 {

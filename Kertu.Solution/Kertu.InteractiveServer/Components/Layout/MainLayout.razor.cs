@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Kertu.InteractiveServer.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace Kertu.InteractiveServer.Components.Layout
 {
@@ -12,6 +13,12 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         [Inject]
         private NavigationManager Navigation { get; set; }
+
+        [Inject]
+        private NavigationStateService NavigationState { get; set; }
+
+        [Inject]
+        private Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; }
 
         string? _userEmail;
         bool _sidebarExpanded = false;
@@ -51,6 +58,19 @@ namespace Kertu.InteractiveServer.Components.Layout
             _userEmail = authState.User.Identity?.Name;
             ThemeService.ThemeChanged += OnThemeChanged;
             _value = ThemeService.Theme != CurrentDarkTheme;
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender && !NavigationState.HasNavigatedToLastUrl)
+            {
+                NavigationState.HasNavigatedToLastUrl = true;
+                string? lastUrl = await LocalStorage.GetItemAsync<string>("lastUrl");
+                if (!string.IsNullOrWhiteSpace(lastUrl) && !Navigation.Uri.EndsWith(lastUrl))
+                {
+                    Navigation.NavigateTo(lastUrl);
+                }
+            }
         }
 
         void IDisposable.Dispose()
