@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Kertu.InteractiveServer.Components;
 using Kertu.InteractiveServer.Components.Account;
 using Kertu.InteractiveServer.Data;
@@ -29,7 +30,10 @@ builder
 string? connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseNpgsql(connectionString).EnableSensitiveDataLogging(),
+    ServiceLifetime.Transient
+);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder
@@ -49,8 +53,14 @@ builder
 //Radzen Components
 builder.Services.AddRadzenComponents();
 
+// Blazored local storage
+builder.Services.AddBlazoredLocalStorage();
+
 //User state service
 builder.Services.AddSingleton<UserStateService>();
+
+// Navigation state service
+builder.Services.AddSingleton<NavigationStateService>();
 
 //App cookies
 builder.Services.AddRadzenCookieThemeService(options =>
