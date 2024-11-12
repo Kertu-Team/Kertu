@@ -1,9 +1,9 @@
 name: Scheduled Weekly Merge
 
 on:
-  schedule:
-    # Runs every Monday at 6:00 AM UTC
-    - cron: '0 6 * * 1'
+  # schedule:
+  #   # Runs every Monday at 6:00 AM UTC
+  #   - cron: '0 6 * * 1'
   workflow_dispatch:
 
 permissions: write-all
