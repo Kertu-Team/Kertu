@@ -1,5 +1,4 @@
-﻿using Kertu.InteractiveServer.Services;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Radzen;
 using Models = Kertu.InteractiveServer.Data.Models.Elements;
 
@@ -10,9 +9,6 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         [Parameter]
         public required string Id { get; set; }
         int IdValue => int.Parse(Id);
-
-        [Inject]
-        private RecentElementService RecentElement { get; set; }
 
         Models.Card? _card;
         string _title = string.Empty;
@@ -28,11 +24,6 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             }
             _title = _card.Name;
             _description = _card.Description;
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            await RecentElement.Save();
         }
 
         async Task OnBusyClick()

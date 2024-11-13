@@ -1,5 +1,4 @@
-﻿using Kertu.InteractiveServer.Services;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace Kertu.InteractiveServer.Components.Layout
 {
@@ -13,12 +12,6 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         [Inject]
         private NavigationManager Navigation { get; set; }
-
-        [Inject]
-        private RecentElementService RecentElement { get; set; }
-
-        [Inject]
-        private UserStateService UserState { get; set; }
 
         string? _userEmail;
         bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
@@ -58,14 +51,6 @@ namespace Kertu.InteractiveServer.Components.Layout
             _userEmail = authState.User.Identity?.Name;
             ThemeService.ThemeChanged += OnThemeChanged;
             _value = ThemeService.Theme != CurrentDarkTheme;
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender && !UserState.RecentElementAlreadyOpened)
-            {
-                await RecentElement.Open();
-            }
         }
 
         void IDisposable.Dispose()

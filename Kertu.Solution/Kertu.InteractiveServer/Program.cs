@@ -1,4 +1,3 @@
-using Blazored.LocalStorage;
 using Kertu.InteractiveServer.Components;
 using Kertu.InteractiveServer.Components.Account;
 using Kertu.InteractiveServer.Data;
@@ -10,9 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Recent element service
-builder.Services.AddScoped<RecentElementService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
@@ -55,9 +51,6 @@ builder
 
 //Radzen Components
 builder.Services.AddRadzenComponents();
-
-// Blazored local storage
-builder.Services.AddBlazoredLocalStorage();
 
 //User state service
 builder.Services.AddSingleton<UserStateService>();
