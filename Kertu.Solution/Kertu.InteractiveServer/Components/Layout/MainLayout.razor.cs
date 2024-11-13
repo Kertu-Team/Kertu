@@ -15,10 +15,10 @@ namespace Kertu.InteractiveServer.Components.Layout
         private NavigationManager Navigation { get; set; }
 
         [Inject]
-        private NavigationStateService NavigationState { get; set; }
+        private RecentElementService RecentElement { get; set; }
 
         [Inject]
-        private Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; }
+        private UserStateService UserState { get; set; }
 
         string? _userEmail;
         bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
@@ -62,14 +62,9 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender && !NavigationState.HasNavigatedToLastUrl)
+            if (firstRender && !UserState.RecentElementAlreadyOpened)
             {
-                NavigationState.HasNavigatedToLastUrl = true;
-                string? lastUrl = await LocalStorage.GetItemAsync<string>("lastUrl");
-                if (!string.IsNullOrWhiteSpace(lastUrl) && !Navigation.Uri.EndsWith(lastUrl))
-                {
-                    Navigation.NavigateTo(lastUrl);
-                }
+                await RecentElement.Open();
             }
         }
 
