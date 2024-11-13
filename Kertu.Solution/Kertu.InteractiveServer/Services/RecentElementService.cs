@@ -28,7 +28,7 @@ namespace Kertu.InteractiveServer.Services
 
         public async Task Save()
         {
-            await LocalStorage.SetItemAsync("lastUrl", Navigation.Uri);
+            await LocalStorage.SetItemAsync("lastUrl", Navigation.ToBaseRelativePath(Navigation.Uri));
         }
     }
 }
