@@ -21,11 +21,6 @@
 
 <body>
     <Routes @rendermode="RenderModeForPage" />
-    <script>
-        window.onbeforeunload = function () {
-            localStorage.setItem('lastUrl', window.location.pathname + window.location.search + window.location.hash);
-        };
-    </script>
     <script src="_framework/blazor.web.js"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>

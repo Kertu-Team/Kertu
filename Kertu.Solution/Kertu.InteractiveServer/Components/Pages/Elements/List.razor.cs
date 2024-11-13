@@ -1,4 +1,5 @@
 ﻿using Kertu.InteractiveServer.Data.Models.Elements;
+using Kertu.InteractiveServer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -8,13 +9,16 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 {
     public partial class List : ComponentBase
     {
-        string _title = string.Empty;
-        List<Models.Card> _active = [];
-        List<Models.TaskCard> _completed = [];
-
         [Parameter]
         public required string Id { get; set; }
         int IdValue => int.Parse(Id);
+
+        [Inject]
+        private RecentElementService RecentElement { get; set; }
+
+        string _title = string.Empty;
+        List<Models.Card> _active = [];
+        List<Models.TaskCard> _completed = [];
 
         protected override void OnInitialized()
         {
@@ -25,6 +29,11 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _active = list.Children.Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted).ToList();
 
             _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).ToList();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await RecentElement.Save();
         }
 
         async Task MarkAsCompleted(Models.TaskCard task)
