@@ -1,6 +1,4 @@
-﻿using Blazored.LocalStorage;
-using Kertu.InteractiveServer.Services;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace Kertu.InteractiveServer.Components.Layout
 {
@@ -14,12 +12,6 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         [Inject]
         private NavigationManager Navigation { get; set; }
-
-        [Inject]
-        private UserStateService UserState { get; set; }
-
-        [Inject]
-        private ILocalStorageService LocalStorage { get; set; }
 
         string? _userEmail;
         bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
@@ -59,21 +51,6 @@ namespace Kertu.InteractiveServer.Components.Layout
             _userEmail = authState.User.Identity?.Name;
             ThemeService.ThemeChanged += OnThemeChanged;
             _value = ThemeService.Theme != CurrentDarkTheme;
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender && !UserState.NavigatedToRecent)
-            {
-                // Retrieve the last visited page URL from the service
-                string? lastPage = await LocalStorage.GetItemAsync<string>("LastPage");
-
-                if (!string.IsNullOrEmpty(lastPage))
-                {
-                    UserState.NavigatedToRecent = true;
-                    Navigation.NavigateTo(lastPage);
-                }
-            }
         }
 
         void IDisposable.Dispose()

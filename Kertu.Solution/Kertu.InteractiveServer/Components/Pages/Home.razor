@@ -3,8 +3,6 @@
 @page "/"
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
-@inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTracker />
 
@@ -14,7 +12,7 @@
         <form action="Account/Logout" method="post">
             <AntiforgeryToken />
             <input type="hidden" name="ReturnUrl" value="@_currentUrl" />
-            <button type="submit" @onclick="() => LocalStorage.ClearAsync()">Logout</button>
+            <button type="submit" @onclick="() => ClearBrowserCache()">Logout</button>
         </form>
     </Authorized>
 </AuthorizeView>
