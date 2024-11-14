@@ -1,6 +1,8 @@
 ﻿@page "/board"
 @inject IJSRuntime jsRuntime
 
+<PageTracker />
+
 <RadzenDropZoneContainer TItem="MyTask" Data="_data"
                          ItemSelector="@_itemSelector"
                          ItemRender="@OnItemRender"

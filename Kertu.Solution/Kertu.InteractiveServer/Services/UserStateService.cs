@@ -4,5 +4,6 @@
     {
         public bool TreeViewNavigationPanelOpened { get; set; }
         public Data.Models.Elements.Element LastOpenedElement { get; set; }
+        public bool NavigatedToRecent { get; set; }
     }
 }

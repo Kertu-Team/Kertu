@@ -1,0 +1,12 @@
+﻿@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components
+
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await LocalStorage.SetItemAsync("LastPage", NavigationManager.Uri);
+    }
+}
