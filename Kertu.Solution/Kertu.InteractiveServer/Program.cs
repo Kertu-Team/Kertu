@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Kertu.InteractiveServer.Components;
 using Kertu.InteractiveServer.Components.Account;
 using Kertu.InteractiveServer.Data;
@@ -52,7 +53,6 @@ builder
 //Radzen Components
 builder.Services.AddRadzenComponents();
 
-//User state service
 builder.Services.AddSingleton<UserStateService>();
 
 //App cookies
@@ -61,6 +61,8 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Name = "ApplicationTheme"; // The name of the cookie
     options.Duration = TimeSpan.FromDays(365); // The duration of the cookie
 });
+
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 
