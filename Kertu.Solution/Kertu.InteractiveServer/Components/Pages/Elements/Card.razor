@@ -5,10 +5,9 @@
 @inject ApplicationDbContext dbContext
 @inject NotificationService notificationService
 
-<PageTracker />
-
 <RadzenStack Gap="8px" class="h-100">
     <RadzenTextBox Placeholder="Title..." class="w-100" aria-label="Card title" @bind-Value=@_title />
-    <RadzenHtmlEditor Placeholder="Description..." class="h-100" aria-label="Card description" @bind-Value=@_description UploadUrl="upload/image" />
+    <RadzenHtmlEditor Placeholder="Description..." class="h-100" aria-label="Card description" @bind-Value=@_description
+        UploadUrl="upload/image" />
     <RadzenButton style="width: 160px" Icon="save" BusyText="Saving ..." IsBusy=@_busy Click=@OnBusyClick Text="Save" />
 </RadzenStack>

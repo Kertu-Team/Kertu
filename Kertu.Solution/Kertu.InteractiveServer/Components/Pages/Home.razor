@@ -4,8 +4,6 @@
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
 
-<PageTracker />
-
 <AuthorizeView>
     <Authorized>
         Hello @context.User.Identity?.Name!
