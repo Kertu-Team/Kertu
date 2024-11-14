@@ -7,12 +7,11 @@
 @inject ApplicationDbContext dbContext
 @inject NavigationManager navigationManager
 
-<PageTracker />
-
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
 <RadzenDataList Data="@_active" TItem="Models.Card">
     <Template Context="card">
-        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(card)">
+        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
+            @onclick="() => Open(card)">
             @if (card is Models.TaskCard taskCard)
             {
                 <RadzenIcon Icon="radio_button_unchecked" class="radio-check" @onclick="() => MarkAsCompleted(taskCard)" />
@@ -25,7 +24,8 @@
 <RadzenText TagName="TagName.H4">Completed</RadzenText>
 <RadzenDataList Data="@_completed" TItem="Models.TaskCard">
     <Template Context="task">
-        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer" @onclick="() => Open(task)">
+        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
+            @onclick="() => Open(task)">
             <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
             <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
         </RadzenStack>
@@ -38,9 +38,9 @@
         transition: color 0.2s;
     }
 
-        .radio-check:hover {
-            color: var(--rz-primary);
-        }
+    .radio-check:hover {
+        color: var(--rz-primary);
+    }
 
     .completed-text {
         color: #888;

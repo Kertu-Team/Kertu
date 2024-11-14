@@ -1,20 +1,23 @@
 ﻿@inherits LayoutComponentBase
-
+@using Kertu.InteractiveServer.Components.Pages
 <RadzenComponents @rendermode="InteractiveServer" />
 
 @inject CookieThemeService CookieThemeService
 @inject Services.UserStateService UserStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
 @inject ThemeService ThemeService
+
+<PageTracker />
 
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100"
+            JustifyContent="JustifyContent.SpaceBetween">
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
                 @if (!IsAccountRoute)
                 {
-                    <RadzenSidebarToggle Icon="list" Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
+                    <RadzenSidebarToggle Icon="list"
+                        Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
                 }
                 else
                 {
