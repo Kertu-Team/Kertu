@@ -13,7 +13,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         [CascadingParameter]
         private HttpContext HttpContext { get; set; } = default!;
 
-        readonly List<TreeViewItem> _treeViewItems = [];
+        readonly List<TreeViewItem> _treeViewItems = new();
         RadzenTree _tree = new();
         object _selection;
 
@@ -24,7 +24,16 @@ namespace Kertu.InteractiveServer.Components.Layout
             base.OnInitialized();
 
             HttpContext = httpContextAccessor.HttpContext;
-            _currentUser = dbContext.Users.Single(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name);
+            var userName = httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+            if (userName != null)
+            {
+                _currentUser = dbContext.Users.Single(u => u.UserName == userName);
+            }
+
+            if (_currentUser == null)
+            {
+                return;
+            }
 
             var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == _currentUser).UserElements;
             foreach (var element in elements)
@@ -48,7 +57,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         private bool SearchChildren(IQueryable<Element> parent)
         {
-            List<Element> children = [];
+            List<Element> children = new();
             if (parent.First() is List)
             {
                 var list = parent.Cast<List>();
@@ -265,7 +274,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         void CascadeDelete(IQueryable<Element> parent)
         {
-            List<Element> children = [];
+            List<Element> children = new();
             if (parent.First() is List)
             {
                 var list = parent.Cast<List>();
@@ -288,8 +297,8 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         private List<TreeViewItem> LoadTree(IQueryable<Element> parent)
         {
-            List<TreeViewItem> treeViewItems = [];
-            List<Element> children = [];
+            List<TreeViewItem> treeViewItems = new();
+            List<Element> children = new();
             if (parent.First() is List)
             {
                 var list = parent.Cast<List>();

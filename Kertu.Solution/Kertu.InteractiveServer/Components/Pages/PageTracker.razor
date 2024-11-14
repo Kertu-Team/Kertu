@@ -1,12 +1,33 @@
-﻿@using Blazored.LocalStorage
-@using Microsoft.AspNetCore.Components
+﻿@using Microsoft.AspNetCore.Components
+@using Blazored.LocalStorage
+@using Blazored.SessionStorage
 
+@inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
-@inject NavigationManager NavigationManager
+@inject ISessionStorageService SessionStorage
 
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LocalStorage.SetItemAsync("LastPage", NavigationManager.Uri);
+        if (firstRender)
+        {
+            bool navigatedToRecent = await SessionStorage.GetItemAsync<bool>("NavigatedToRecent");
+
+            if (!navigatedToRecent)
+            {
+                string lastPage = await LocalStorage.GetItemAsync<string>("LastPage") ?? string.Empty;
+                if (!string.IsNullOrEmpty(lastPage) && lastPage != Navigation.Uri)
+                {
+                    Navigation.NavigateTo(lastPage);
+                    await SessionStorage.SetItemAsync("NavigatedToRecent", true);
+                }
+                else
+                {
+                    // if there is no recent, do not navigate
+                    await SessionStorage.SetItemAsync("NavigatedToRecent", true);
+                }
+            }
+            await LocalStorage.SetItemAsync("LastPage", Navigation.Uri);
+        }
     }
 }
