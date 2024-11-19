@@ -4,9 +4,9 @@ services:
     container_name: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: kertu
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_volume:/var/lib/postgresql/data
 
@@ -17,10 +17,10 @@ services:
     depends_on:
       - postgres
     environment:
-      POSTGRES_DB: kertu
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=kertu;Username=postgres;Password=password"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     volumes:
       - data_protection_keys:/root/.aspnet/DataProtection-Keys
     ports:
