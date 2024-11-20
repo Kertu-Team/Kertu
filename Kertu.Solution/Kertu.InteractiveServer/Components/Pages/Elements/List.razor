@@ -8,10 +8,16 @@
 @inject NavigationManager navigationManager
 
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="margin-bottom: 10px; padding: 0.85rem; height: 74px;">
+    <RadzenTextBox Placeholder="Add a new card" Style="width:100%; height:100%" @bind-Value="_newCardName" @onkeydown="OnKeyDown" />
+    <RadzenButton Icon="add" Click="@AddNewCard" Disabled="@string.IsNullOrWhiteSpace(_newCardName)">Add</RadzenButton>
+</RadzenStack>
+
 <RadzenDataList Data="@_active" TItem="Models.Card">
     <Template Context="card">
         <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
-            @onclick="() => Open(card)">
+                     @onclick="() => Open(card)">
             @if (card is Models.TaskCard taskCard)
             {
                 <RadzenIcon Icon="radio_button_unchecked" class="radio-check" @onclick="() => MarkAsCompleted(taskCard)" />
@@ -25,7 +31,7 @@
 <RadzenDataList Data="@_completed" TItem="Models.TaskCard">
     <Template Context="task">
         <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
-            @onclick="() => Open(task)">
+                     @onclick="() => Open(task)">
             <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
             <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
         </RadzenStack>
@@ -38,9 +44,9 @@
         transition: color 0.2s;
     }
 
-    .radio-check:hover {
-        color: var(--rz-primary);
-    }
+        .radio-check:hover {
+            color: var(--rz-primary);
+        }
 
     .completed-text {
         color: #888;
