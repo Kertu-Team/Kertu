@@ -18,14 +18,16 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         List<Models.Card> _active = [];
         List<Models.TaskCard> _completed = [];
 
+        // Field to track the visibility of completed tasks
+        bool _showCompleted = false;
+
         protected override void OnInitialized()
         {
             Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
             _title = list.Name;
 
-            // Separate active cards (includes both TaskCard and Card) and completed task cards
+            // Separate active and completed cards
             _active = list.Children.Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted).ToList();
-
             _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).ToList();
         }
 
@@ -84,6 +86,12 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             {
                 await AddNewCard();
             }
+        }
+
+        // Method to toggle the visibility of completed tasks
+        void ToggleCompleted()
+        {
+            _showCompleted = !_showCompleted;
         }
     }
 }

@@ -9,6 +9,7 @@
 
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
 
+<!-- Input to add new card -->
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="margin-bottom: 10px; padding: 0.85rem; height: 74px;">
     <RadzenTextBox Placeholder="Add a new card" Style="width:100%; height:100%" @bind-Value="_newCardName" @onkeydown="OnKeyDown" />
     <RadzenButton Icon="add" Click="@AddNewCard" Disabled="@string.IsNullOrWhiteSpace(_newCardName)">Add</RadzenButton>
@@ -27,16 +28,25 @@
     </Template>
 </RadzenDataList>
 
-<RadzenText TagName="TagName.H4">Completed</RadzenText>
-<RadzenDataList Data="@_completed" TItem="Models.TaskCard">
-    <Template Context="task">
-        <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
-                     @onclick="() => Open(task)">
-            <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
-            <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
-        </RadzenStack>
-    </Template>
-</RadzenDataList>
+<!-- Toggle Header for Completed Tasks -->
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="cursor: pointer; margin-top: 20px;" @onclick="ToggleCompleted">
+    <RadzenIcon Icon="@(_showCompleted ? "expand_more" : "chevron_right")" Style="margin-right: 5px;" />
+    <RadzenText TagName="TagName.H4" Style="margin:0">Completed (@_completed.Count)</RadzenText>
+</RadzenStack>
+
+<!-- Conditionally render the completed tasks -->
+@if (_showCompleted)
+{
+    <RadzenDataList Data="@_completed" TItem="Models.TaskCard">
+        <Template Context="task">
+            <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
+                         @onclick="() => Open(task)">
+                <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
+                <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
+            </RadzenStack>
+        </Template>
+    </RadzenDataList>
+}
 
 <style>
     .radio-check {
