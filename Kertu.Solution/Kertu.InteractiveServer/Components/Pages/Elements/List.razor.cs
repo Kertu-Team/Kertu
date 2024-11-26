@@ -9,17 +9,18 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 {
     public partial class List : ComponentBase
     {
-        [Parameter]
-        public required string Id { get; set; }
-        int IdValue => int.Parse(Id);
-
-        string _title = string.Empty;
-        string _newCardName = string.Empty;
-        List<Models.Card> _active = [];
-        List<Models.TaskCard> _completed = [];
+        private string _title = string.Empty;
+        private string _newCardName = string.Empty;
+        private List<Models.Card> _active = [];
+        private List<Models.TaskCard> _completed = [];
 
         // Field to track the visibility of completed tasks
-        bool _showCompleted = false;
+        private bool _showCompleted = false;
+
+        [Parameter]
+        public required string Id { get; set; }
+
+        private int IdValue => int.Parse(Id);
 
         protected override void OnInitialized()
         {
@@ -31,7 +32,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).ToList();
         }
 
-        async Task MarkAsCompleted(Models.TaskCard task)
+        private async Task MarkAsCompleted(Models.TaskCard task)
         {
             task.IsCompleted = true;
             await dbContext.SaveChangesAsync();
@@ -40,7 +41,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _completed.Add(task);
         }
 
-        async Task UnmarkAsCompleted(Models.TaskCard task)
+        private async Task UnmarkAsCompleted(Models.TaskCard task)
         {
             task.IsCompleted = false;
             await dbContext.SaveChangesAsync();
@@ -49,12 +50,12 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             _active.Add(task);
         }
 
-        async Task Open(Models.Card card)
+        private async Task Open(Models.Card card)
         {
             await Task.Run(() => navigationManager.NavigateTo($"/card/{card.Id}", true));
         }
 
-        async Task AddNewCard()
+        private async Task AddNewCard()
         {
             if (!string.IsNullOrWhiteSpace(_newCardName))
             {
@@ -80,7 +81,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             }
         }
 
-        async Task OnKeyDown(KeyboardEventArgs e)
+        private async Task OnKeyDown(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
             {
@@ -89,7 +90,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         }
 
         // Method to toggle the visibility of completed tasks
-        void ToggleCompleted()
+        private void ToggleCompleted()
         {
             _showCompleted = !_showCompleted;
         }
