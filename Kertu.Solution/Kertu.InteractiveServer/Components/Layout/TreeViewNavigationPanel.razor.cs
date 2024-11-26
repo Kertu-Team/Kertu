@@ -47,7 +47,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         private bool ShouldExpand(object data)
         {
-            if (UserStateService.LastOpenedElement != null)
+            if (UserStateService.GetLastOpenedElement(_currentUser.Id) != null)
             {
                 var element = (data as TreeViewItem).Element;
                 return SearchChildren(dbContext.Elements.Where(e => e.Id == element.Id));
@@ -71,7 +71,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             foreach (var child in children)
             {
-                if (child.Id == UserStateService.LastOpenedElement.Id)
+                if (child.Id == UserStateService.GetLastOpenedElement(_currentUser.Id).Id)
                     return true;
                 else
                 {
@@ -87,7 +87,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         {
             TreeViewItem item = _selection as TreeViewItem;
 
-            UserStateService.LastOpenedElement = item.Element;
+            UserStateService.SetLastOpenedElement(_currentUser.Id, item.Element);
 
             if (item.Element is Card card)
             {
@@ -246,7 +246,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                 element.AddTo(parent);
             }
             dbContext.SaveChanges();
-            UserStateService.LastOpenedElement = element;
+            UserStateService.SetLastOpenedElement(_currentUser.Id, element);
             NavigationManager.Refresh(true);
         }
 

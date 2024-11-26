@@ -1,11 +1,13 @@
 ﻿@inherits LayoutComponentBase
 @using Kertu.InteractiveServer.Components.Pages
+@using Kertu.InteractiveServer.Data
 <RadzenComponents @rendermode="InteractiveServer" />
 
 @inject CookieThemeService CookieThemeService
 @inject Services.UserStateService UserStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ThemeService ThemeService
+@inject ApplicationDbContext DbContext
 
 <PageTracker />
 
@@ -17,7 +19,7 @@
                 @if (!IsAccountRoute)
                 {
                     <RadzenSidebarToggle Icon="list"
-                        Click="@(() => UserStateService.TreeViewNavigationPanelOpened = !UserStateService.TreeViewNavigationPanelOpened)" />
+                        Click="@(() => UserStateService.SetTreeViewNavigationPanelOpened(_userID,!UserStateService.GetTreeViewNavigationPanelOpened(_userID)))" />
                 }
                 else
                 {
@@ -54,7 +56,7 @@
         </RadzenStack>
     </RadzenHeader>
 
-    @if (UserStateService.TreeViewNavigationPanelOpened)
+    @if (UserStateService.GetTreeViewNavigationPanelOpened(_userID))
     {
         <RadzenSidebar Responsive="false">
             <TreeViewNavigationPanel />

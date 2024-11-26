@@ -43,8 +43,13 @@ namespace Kertu.InteractiveServer.Components.Pages
         {
             await LocalStorage.ClearAsync();
             await SessionStorage.ClearAsync();
-            UserStateService.TreeViewNavigationPanelOpened = default!;
-            UserStateService.LastOpenedElement = default!;
+
+            // server side; not browser cache
+            //
+            // but if we really want to clear it here, it needs to know current user
+            //
+            //UserStateService.TreeViewNavigationPanelOpened = default!;
+            //UserStateService.LastOpenedElement = default!;
         }
     }
 }
