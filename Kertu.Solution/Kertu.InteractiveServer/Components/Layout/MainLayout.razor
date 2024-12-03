@@ -3,6 +3,7 @@
 @using Kertu.InteractiveServer.Data
 <RadzenComponents @rendermode="InteractiveServer" />
 
+@inject NavigationManager NavigationManager
 @inject CookieThemeService CookieThemeService
 @inject Services.UserStateService UserStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -10,68 +11,83 @@
 @inject ApplicationDbContext DbContext
 
 <PageTracker />
-
+@if (NavigationManager.Uri.Contains("/Account/Manage"))
+{
+	<!-- Wave Background -->
+	<div class="waveWrapper waveAnimation">
+		<div class="waveWrapperInner bgTop">
+			<div class="wave waveTop" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+		</div>
+		<div class="waveWrapperInner bgMiddle">
+			<div class="wave waveMiddle" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+		</div>
+		<div class="waveWrapperInner bgBottom">
+			<div class="wave waveBottom" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+		</div>
+	</div>
+}
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
-    <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100"
-            JustifyContent="JustifyContent.SpaceBetween">
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
-                @if (!IsAccountRoute)
-                {
-                    <RadzenSidebarToggle Icon="list"
-                        Click="@(() => UserStateService.SetTreeViewNavigationPanelOpened(_userID,!UserStateService.GetTreeViewNavigationPanelOpened(_userID)))" />
-                }
-                else
-                {
-                    <!-- Filler element to maintain layout consistency -->
-                    <div style="width: 16px" />
-                }
-                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100 pt-2 pb-2">
-                    <a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
-                        <img src="/favicon/favicon-48x48.png" alt="App logo" width="40" />
-                    </a>
-                    <a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
-                        <RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.6667rem;" />
-                    </a>
-                </RadzenStack>
-            </RadzenStack>
+	<RadzenHeader>
+		<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100"
+					 JustifyContent="JustifyContent.SpaceBetween">
+			<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" class="h-100">
+				@if (!IsAccountRoute)
+				{
+					<RadzenSidebarToggle Icon="list"
+										 Click="@(() => UserStateService.SetTreeViewNavigationPanelOpened(_userID,!UserStateService.GetTreeViewNavigationPanelOpened(_userID)))" />
+				}
+				else
+				{
+					<!-- Filler element to maintain layout consistency -->
+					<div style="width: 16px" />
+				}
+				<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10" class="h-100 pt-2 pb-2">
+					<a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
+						<img src="/favicon/favicon-48x48.png" alt="App logo" width="40" />
+					</a>
+					<a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
+						<RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.6667rem;" />
+					</a>
+				</RadzenStack>
+			</RadzenStack>
 
-            @if (!IsAccountRoute)
-            {
-                <RadzenProfileMenu>
-                    <Template>
-                        <RadzenGravatar Email="@_userEmail">
-                        </RadzenGravatar>
-                    </Template>
-                    <ChildContent>
-                        <div @onclick="() => Change()">
-                            <RadzenProfileMenuItem Text="Switch Theme" Icon=@Icon></RadzenProfileMenuItem>
-                        </div>
-                        <RadzenProfileMenuItem Text="Manage Account" Path="Account/Manage" Icon="account_circle"></RadzenProfileMenuItem>
-                        @*<RadzenProfileMenuItem Text="Logout" Path="Account/Logout" Icon="logout"></RadzenProfileMenuItem>}*@
-                    </ChildContent>
-                </RadzenProfileMenu>
-            }
+			@if (!IsAccountRoute)
+			{
+				<RadzenProfileMenu>
+					<Template>
+						<RadzenGravatar Email="@_userEmail">
+						</RadzenGravatar>
+					</Template>
+					<ChildContent>
+						<div @onclick="() => Change()">
+							<RadzenProfileMenuItem Text="Switch Theme" Icon=@Icon></RadzenProfileMenuItem>
+						</div>
+						<RadzenProfileMenuItem Text="Manage Account" Path="Account/Manage" Icon="account_circle"></RadzenProfileMenuItem>
+					</ChildContent>
+				</RadzenProfileMenu>
+			}
 
-        </RadzenStack>
-    </RadzenHeader>
+		</RadzenStack>
+	</RadzenHeader>
 
-    @if (UserStateService.GetTreeViewNavigationPanelOpened(_userID))
-    {
-        <RadzenSidebar Responsive="false">
-            <TreeViewNavigationPanel />
-        </RadzenSidebar>
-    }
+	@if (UserStateService.GetTreeViewNavigationPanelOpened(_userID))
+	{
+		<RadzenSidebar Responsive="false">
+			<TreeViewNavigationPanel />
+		</RadzenSidebar>
+	}
 
-    <RadzenBody>
-        <div class="rz-p-4 h-100">
-            @Body
-        </div>
-    </RadzenBody>
+	<RadzenBody>
+		<div class="rz-p-4 h-100">
+			@Body
+		</div>
+	</RadzenBody>
 </RadzenLayout>
-
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+	An unhandled error has occurred.
+	<a href="" class="reload">Reload</a>
+	<a class="dismiss">🗙</a>
 </div>
+
+<!-- Link to external CSS -->
+<link rel="stylesheet" href="background.css">
