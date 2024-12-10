@@ -207,6 +207,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Value = 11,
                         Icon = "post_add",
                     },
+                    new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
                     {
                         Text = "Rename",
@@ -243,6 +244,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Value = 13,
                         Icon = "dashboard_customize",
                     },
+                    new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
                     {
                         Text = "Rename",
