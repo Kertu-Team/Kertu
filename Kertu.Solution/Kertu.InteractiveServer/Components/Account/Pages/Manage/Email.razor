@@ -14,44 +14,71 @@
 
 <PageTitle>Manage email</PageTitle>
 
-<h3>Manage email</h3>
-
 <StatusMessage Message="@message"/>
-<div class="row">
-    <div class="col-md-6">
-        <form @onsubmit="OnSendEmailVerificationAsync" @formname="send-verification" id="send-verification-form" method="post">
-            <AntiforgeryToken />
-        </form>
-        <EditForm Model="Input" FormName="change-email" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            @if (isEmailConfirmed)
-            {
-                <div class="form-floating mb-3 input-group">
-                    <input type="text" value="@email" class="form-control" placeholder="Please enter your email." disabled />
-                    <div class="input-group-append">
-                        <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+<div class="container custom-left-align">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Manage Email</h4>
+            <small>Change your email settings</small>
+        </div>
+        <div class="card-body">
+            <form @onsubmit="OnSendEmailVerificationAsync" id="send-verification-form" method="post">
+                <AntiforgeryToken />
+            </form>
+            <EditForm Model="Input" FormName="change-email" OnValidSubmit="OnValidSubmitAsync" method="post">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                @if (isEmailConfirmed)
+                {
+                    <div class="form-floating mb-3 input-group">
+                        <input type="text" value="@email" class="form-control" placeholder="Please enter your email." disabled />
+                        <div class="input-group-append">
+                            <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+                        </div>
+                        <label for="email">Email</label>
                     </div>
-                    <label for="email" class="form-label">Email</label>
-                </div>
-            }
-            else
-            {
+                }
+                else
+                {
+                    <div class="form-floating mb-3">
+                        <input type="text" value="@email" class="form-control" placeholder="Please enter your email." disabled />
+                        <label for="email">Email</label>
+                        <button type="submit" class="btn btn-link" form="send-verification-form">Send verification email</button>
+                    </div>
+                }
                 <div class="form-floating mb-3">
-                    <input type="text" value="@email" class="form-control" placeholder="Please enter your email." disabled />
-                    <label for="email" class="form-label">Email</label>
-                    <button type="submit" class="btn btn-link" form="send-verification-form">Send verification email</button>
+                    <InputText @bind-Value="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Please enter new email." />
+                    <label for="new-email">New email</label>
+                    <ValidationMessage For="() => Input.NewEmail" class="text-danger" />
                 </div>
-            }
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.NewEmail" class="form-control" autocomplete="email" aria-required="true" placeholder="Please enter new email." />
-                <label for="new-email" class="form-label">New email</label>
-                <ValidationMessage For="() => Input.NewEmail" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Change email</button>
-        </EditForm>
+                <button type="submit" class="btn btn-primary w-100">Change Email</button>
+            </EditForm>
+        </div>
     </div>
 </div>
+
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 600px;
+        margin: 20px auto;
+        margin-left: 200px;
+    }
+
+    .custom-left-align {
+        margin-left: 0px;
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+</style>
 
 @code {
     private string? message;
