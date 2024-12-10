@@ -16,6 +16,8 @@ jobs:
       SOURCE_BRANCH: ${{ 'dev' }}
       # Branch to which you want to merge
       TARGET_BRANCH: ${{ 'main' }}
+      # Emails to which notifications about success or failure will be sent
+      CONTACT_EMAILS: kamilszot404@gmail.com, 28862@s.pm.szczecin.pl
 
     steps:
       - name: Checkout Repository
@@ -45,7 +47,7 @@ jobs:
           password: ${{ secrets.GMAIL_PASSWORD }}
           subject: Workflow Failed - Weekly Merge
           body: The weekly merge workflow has failed. Please check the Actions tab on GitHub (Scheduled Weekly Merge) for more details. Good luck!
-          to: kamilszot404@gmail.com
+          to: ${{ env.CONTACT_EMAILS }}
           from: GitHub Actions
 
       - name: Send success email notification
@@ -58,5 +60,5 @@ jobs:
           password: ${{ secrets.GMAIL_PASSWORD }}
           subject: Workflow Succeeded - Weekly Merge
           body: The weekly merge workflow has completed successfully.
-          to: kamilszot404@gmail.com
+          to: ${{ env.CONTACT_EMAILS }}
           from: GitHub Actions
