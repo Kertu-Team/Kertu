@@ -8,6 +8,8 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject Services.UserStateService UserStateService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Profile</PageTitle>
 
@@ -66,12 +68,14 @@
     private ApplicationUser user = default!;
     private string? username;
     private string? phoneNumber;
+    private string? userId;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,6 +84,15 @@
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         Input.PhoneNumber ??= phoneNumber;
+
+        userId = user.Id;
+
+
+        if(UserStateService.GetTreeViewNavigationPanelOpened(userId))
+        {
+            UserStateService.SetTreeViewNavigationPanelOpened(userId, false);
+            NavigationManager.Refresh(true);
+        }
     }
 
     private async Task OnValidSubmitAsync()
