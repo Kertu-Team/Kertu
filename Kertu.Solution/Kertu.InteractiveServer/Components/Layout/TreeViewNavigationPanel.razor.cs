@@ -2,6 +2,7 @@
 using Kertu.InteractiveServer.Data.Models;
 using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Radzen.Blazor;
@@ -101,6 +102,51 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 NavigationManager.NavigateTo($"/board/{board.Id}", true);
             }
+        }
+
+        void NavigationPanelContextMenu(MouseEventArgs args)
+        {
+            Action<MenuItemEventArgs> action = async (e) =>
+            {
+                switch (e.Value)
+                {
+                    case 11:
+                        await AddElementDialog(null, typeof(Card));
+                        break;
+
+                    case 12:
+                        await AddElementDialog(null, typeof(List));
+                        break;
+
+                    case 13:
+                        await AddElementDialog(null, typeof(Board));
+                        break;
+                }
+            };
+            List<ContextMenuItem> items = new();
+            items =
+            [
+                new ContextMenuItem()
+                {
+                    Text = "Add card",
+                    Value = 11,
+                    Icon = "post_add",
+                },
+                new ContextMenuItem()
+                {
+                    Text = "Add list",
+                    Value = 12,
+                    Icon = "splitscreen_add",
+                },
+                new ContextMenuItem()
+                {
+                    Text = "Add board",
+                    Value = 13,
+                    Icon = "dashboard_customize",
+                },
+            ];
+
+            ContextMenuService.Open(args, items, action);
         }
 
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
