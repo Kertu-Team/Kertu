@@ -14,29 +14,76 @@
 
 <StatusMessage Message="@message" />
 
-<h3>Delete Personal Data</h3>
-
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-    </p>
+<div class="container custom-left-align">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Delete Personal Data</h4>
+            <small>Permanently remove your account</small>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <p>
+                    <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+                </p>
+            <EditForm Model="Input" FormName="delete-user" OnValidSubmit="OnValidSubmitAsync" method="post">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                @if (requirePassword)
+                {
+                    <div class="form-floating mb-3">
+                        <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Enter your password" />
+                        <label for="password" class="form-label">Password</label>
+                        <ValidationMessage For="() => Input.Password" class="text-danger" />
+                    </div>
+                }
+                <button class="btn btn-danger w-100" type="submit">Delete Data and Close My Account</button>
+            </EditForm>
+        </div>
+    </div>
 </div>
 
-<div>
-    <EditForm Model="Input" FormName="delete-user" OnValidSubmit="OnValidSubmitAsync" method="post">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="text-danger" role="alert" />
-        @if (requirePassword)
-        {
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
-                <label for="password" class="form-label">Password</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-        }
-        <button class="w-100 btn btn-lg btn-danger" type="submit">Delete data and close my account</button>
-    </EditForm>
-</div>
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border */
+        border-radius: 15px; /* Rounded corners */
+        padding: 20px; /* Inner spacing */
+        max-width: 800px; /* Width of the card */
+        margin: 20px auto; /* Center align */
+    }
+
+    .custom-left-align {
+        margin-left: 0px; /* Adjust alignment as needed */
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 15px;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+</style></div>
 
 @code {
     private string? message;

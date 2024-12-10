@@ -5,23 +5,68 @@
 <PageTitle>Personal Data</PageTitle>
 
 <StatusMessage />
-<h3>Personal Data</h3>
-
-<div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-        </p>
-        <form action="Account/Manage/DownloadPersonalData" method="post">
-            <AntiforgeryToken />
-            <button class="btn btn-primary" type="submit">Download</button>
-        </form>
-        <p>
-            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Delete</a>
-        </p>
+<div class="container custom-left-align">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Personal Data</h4>
+            <small>Manage your personal account data</small>
+        </div>
+        <div class="card-body">
+            <p>
+                Your account contains personal data that you have given us. This page allows you to download or delete that data.
+            </p>
+            <div class="alert alert-danger">
+                <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+            </div>
+            <form action="Account/Manage/DownloadPersonalData" method="post" class="mb-3">
+                <AntiforgeryToken />
+                <button type="submit" class="btn btn-primary w-100">Download Personal Data</button>
+            </form>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger w-100">Delete Account</a>
+        </div>
     </div>
 </div>
+
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border */
+        border-radius: 15px; /* Rounded corners */
+        padding: 20px; /* Inner spacing */
+        max-width: 800px; /* Width of the card */
+        margin: 20px auto; /* Center align */
+    }
+
+    .custom-left-align {
+        margin-left: 0px; 
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 15px;
+    }
+
+    .btn-primary, .btn-danger {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+</style>
 
 @code {
     [CascadingParameter]
