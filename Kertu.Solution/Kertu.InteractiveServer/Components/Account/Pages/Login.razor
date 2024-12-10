@@ -12,52 +12,93 @@
 
 <PageTitle>Log in</PageTitle>
 
-<div class="w-100 h-100 d-flex align-items-center">
-    <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
-        <div class="rz-login">
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" class="rz-form">
+<div class="area">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+<div class="container">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Log in to Your Account</h4>
+            <small>Please enter your credentials</small>
+        </div>
+        <div class="card-body">
+            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser">
                 <DataAnnotationsValidator />
 
-                <RadzenAlert Visible=@(!string.IsNullOrEmpty(errorMessage)) AlertStyle="AlertStyle.Danger" ShowIcon="false" AllowClose="false" Variant="Variant.Flat" Shade="Shade.Lighter">
-                    @errorMessage
-                </RadzenAlert>
-
-                <div class="rz-form-row">
-                    <label for="email" class="rz-label">Email</label>
-                    <div class="rz-form-input-wrapper">
-                        <InputText @bind-Value="Input.Email" class="rz-textbox" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                        <ValidationMessage For="() => Input.Email" class="text-danger" />
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger text-center">
+                        @errorMessage
                     </div>
+                }
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" class="form-control" id="email" placeholder="Email" />
+                    <label for="email">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
 
-                <div class="rz-form-row">
-                    <label for="password" class="rz-label">Password</label>
-                    <div class="rz-form-input-wrapper">
-                        <InputText type="password" @bind-Value="Input.Password" class="rz-textbox" autocomplete="current-password" aria-required="true" placeholder="password" />
-
-                        <ValidationMessage For="() => Input.Password" class="text-danger" />
-                    </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" id="password" placeholder="Password" />
+                    <label for="password">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
 
-                <div class="rz-form-row">
-                    <label class="rz-label"></label>
-                    <div class="rz-form-input-wrapper rz-login-buttons">
-                        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Text="Login" />
-                        <a href="Account/ForgotPassword" tabindex="0" class="rz-link">Forgot password?</a>
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" id="remember-me" />
+                        <label for="remember-me" class="form-check-label">Remember me</label>
                     </div>
+                    <a href="Account/ForgotPassword" class="text-primary">Forgot password?</a>
                 </div>
+
+                <button type="submit" class="btn btn-primary w-100">Login</button>
             </EditForm>
-
-            <div class="rz-register">
-                Don't have an account yet?
-
-                <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
-                    <RadzenButton ButtonType="ButtonType.Button" Variant="Variant.Flat" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="Sign Up" />
-                </a>
-            </div>
         </div>
-    </RadzenCard>
+        <div class="card-footer text-center bg-light">
+            <span>Don't have an account yet?</span>
+            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" class="btn btn-link text-primary">
+                Sign Up
+            </a>
+        </div>
+    </div>
 </div>
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border */
+        border-radius: 15px; /* Same rounded corners */
+        padding: 20px; /* Inner spacing */
+        max-width: 600px; /* Same width as the card */
+    }
+
+    .custom-left-align {
+        margin-left: 0px; /* Adjust as needed */
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border for a cleaner look */
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0; /* Rounded top corners */
+    }
+</style>
 @code {
     string errorMessage = string.Empty;
 
@@ -120,3 +161,4 @@
         public bool RememberMe { get; set; }
     }
 }
+<link rel="stylesheet" href="backgroundforlogin.css">
