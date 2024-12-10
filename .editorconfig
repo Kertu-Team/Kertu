@@ -366,3 +366,19 @@ dotnet_diagnostic.CS8603.severity = suggestion
 
 #Args outside
 dotnet_diagnostic.BL0005.severity = suggestion
+
+# Class members orders
+dotnet_diagnostic.SA1201.severity = warning
+dotnet_diagnostic.SA1202.severity = warning
+#Disable some rules
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1601.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1206.severity = none
+dotnet_diagnostic.SA1111.severity = none
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1010.severity = none
+dotnet_diagnostic.SA1000.severity = none

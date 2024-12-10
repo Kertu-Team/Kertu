@@ -9,66 +9,112 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Two-factor authentication (2FA)</PageTitle>
+<PageTitle>Two-Factor Authentication</PageTitle>
 
 <StatusMessage />
-<h3>Two-factor authentication (2FA)</h3>
-@if (canTrack)
-{
-    if (is2faEnabled)
-    {
-        if (recoveryCodesLeft == 0)
-        {
-            <div class="alert alert-danger">
-                <strong>You have no recovery codes left.</strong>
-                <p>You must <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
-            </div>
-        }
-        else if (recoveryCodesLeft == 1)
-        {
-            <div class="alert alert-danger">
-                <strong>You have 1 recovery code left.</strong>
-                <p>You can <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
-            </div>
-        }
-        else if (recoveryCodesLeft <= 3)
-        {
-            <div class="alert alert-warning">
-                <strong>You have @recoveryCodesLeft recovery codes left.</strong>
-                <p>You should <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
-            </div>
-        }
 
-        if (isMachineRemembered)
-        {
-            <form style="display: inline-block" @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post">
-                <AntiforgeryToken />
-                <button type="submit" class="btn btn-primary">Forget this browser</button>
-            </form>
-        }
+<div class="container custom-left-align">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Two-Factor Authentication (2FA)</h4>
+            <small>Manage your two-factor authentication settings</small>
+        </div>
+        <div class="card-body">
+            @if (canTrack)
+            {
+                @if (is2faEnabled)
+                {
+                    @if (recoveryCodesLeft == 0)
+                    {
+                        <div class="alert alert-danger">
+                            <strong>You have no recovery codes left.</strong>
+                            <p>You must <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
+                        </div>
+                    }
+                    else if (recoveryCodesLeft == 1)
+                    {
+                        <div class="alert alert-danger">
+                            <strong>You have 1 recovery code left.</strong>
+                            <p>You can <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                        </div>
+                    }
+                    else if (recoveryCodesLeft <= 3)
+                    {
+                        <div class="alert alert-warning">
+                            <strong>You have @recoveryCodesLeft recovery codes left.</strong>
+                            <p>You should <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                        </div>
+                    }
 
-        <a href="Account/Manage/Disable2fa" class="btn btn-primary">Disable 2FA</a>
-        <a href="Account/Manage/GenerateRecoveryCodes" class="btn btn-primary">Reset recovery codes</a>
-    }
-
-    <h4>Authenticator app</h4>
-    @if (!hasAuthenticator)
-    {
-        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary">Add authenticator app</a>
-    }
-    else
-    {
-        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary">Set up authenticator app</a>
-        <a href="Account/Manage/ResetAuthenticator" class="btn btn-primary">Reset authenticator app</a>
-    }
-}
-else
-{
-    <div class="alert alert-danger">
-        <strong>Privacy and cookie policy have not been accepted.</strong>
-        <p>You must accept the policy before you can enable two factor authentication.</p>
+                    <div class="mb-3">
+                        @if (isMachineRemembered)
+                        {
+                            <form style="display: inline-block" @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post">
+                                <AntiforgeryToken />
+                                <button type="submit" class="btn btn-primary me-2">Forget this browser</button>
+                            </form>
+                        }
+                        <a href="Account/Manage/Disable2fa" class="btn btn-primary me-2">Disable 2FA</a>
+                        <a href="Account/Manage/GenerateRecoveryCodes" class="btn btn-primary">Reset Recovery Codes</a>
+                    </div>
+                }
+                <div class="mb-3">
+                    <div class="button-container">
+                    @if (!hasAuthenticator)
+                    {
+                        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary">Add Authenticator App</a>
+                    }
+                    else
+                    {
+                        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary me-2">Set Up Authenticator App</a>
+                        <a href="Account/Manage/ResetAuthenticator" class="btn btn-primary">Reset Authenticator App</a>
+                    }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger">
+                    <strong>Privacy and cookie policy have not been accepted.</strong>
+                    <p>You must accept the policy before you can enable two-factor authentication.</p>
+                </div>
+            }
+        </div>
     </div>
-}
+</div>
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 600px;
+        margin: 20px auto;
+        margin-left: 200px;
+    }
+
+    .custom-left-align {
+        margin-left: 0px;
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem;
+    }
+</style>
 
 @code {
     private bool canTrack;

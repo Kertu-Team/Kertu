@@ -11,27 +11,56 @@
 
 <PageTitle>Profile</PageTitle>
 
-<h3>Profile</h3>
 <StatusMessage />
 
-<div class="row">
-    <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
+<div class="container custom-left-align">
+            <div class="card shadow border-0 rounded">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Manage Your Account</h4>
+                    <small>Change your account settings</small>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" role="alert" />
+                        <div class="form-floating mb-3">
+                            <input type="text" value="@username" class="form-control" id="username" placeholder="Username" disabled />
+                            <label for="username">Username</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.PhoneNumber" class="form-control" id="phone-number" placeholder="Phone Number" />
+                            <label for="phone-number">Phone number</label>
+                            <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+
+                    </EditForm>
+                </div>
             </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                <label for="phone-number" class="form-label">Phone number</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </EditForm>
-    </div>
-</div>
+        </div>
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border */
+        border-radius: 15px; /* Same rounded corners */
+        padding: 20px; /* Inner spacing */
+        max-width: 600px; /* Same width as the card */
+        margin: 20px auto; /* Center align */
+        margin-left: 200px;
+    }
+
+    .custom-left-align {
+        margin-left: 0px; /* Adjust as needed */
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border for a cleaner look */
+    }
+</style>
+
 
 @code {
     private ApplicationUser user = default!;

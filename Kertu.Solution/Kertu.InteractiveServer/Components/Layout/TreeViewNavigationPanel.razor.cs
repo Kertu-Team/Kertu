@@ -2,6 +2,7 @@
 using Kertu.InteractiveServer.Data.Models;
 using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Radzen.Blazor;
@@ -47,7 +48,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         private bool ShouldExpand(object data)
         {
-            if (UserStateService.LastOpenedElement != null)
+            if (UserStateService.GetLastOpenedElement(_currentUser.Id) != null)
             {
                 var element = (data as TreeViewItem).Element;
                 return SearchChildren(dbContext.Elements.Where(e => e.Id == element.Id));
@@ -71,7 +72,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             foreach (var child in children)
             {
-                if (child.Id == UserStateService.LastOpenedElement.Id)
+                if (child.Id == UserStateService.GetLastOpenedElement(_currentUser.Id).Id)
                     return true;
                 else
                 {
@@ -87,7 +88,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         {
             TreeViewItem item = _selection as TreeViewItem;
 
-            UserStateService.LastOpenedElement = item.Element;
+            UserStateService.SetLastOpenedElement(_currentUser.Id, item.Element);
 
             if (item.Element is Card card)
             {
@@ -101,6 +102,51 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 //clicked card board
             }
+        }
+
+        void NavigationPanelContextMenu(MouseEventArgs args)
+        {
+            Action<MenuItemEventArgs> action = async (e) =>
+            {
+                switch (e.Value)
+                {
+                    case 11:
+                        await AddElementDialog(null, typeof(Card));
+                        break;
+
+                    case 12:
+                        await AddElementDialog(null, typeof(List));
+                        break;
+
+                    case 13:
+                        await AddElementDialog(null, typeof(Board));
+                        break;
+                }
+            };
+            List<ContextMenuItem> items = new();
+            items =
+            [
+                new ContextMenuItem()
+                {
+                    Text = "Add card",
+                    Value = 11,
+                    Icon = "post_add",
+                },
+                new ContextMenuItem()
+                {
+                    Text = "Add list",
+                    Value = 12,
+                    Icon = "splitscreen_add",
+                },
+                new ContextMenuItem()
+                {
+                    Text = "Add board",
+                    Value = 13,
+                    Icon = "dashboard_customize",
+                },
+            ];
+
+            ContextMenuService.Open(args, items, action);
         }
 
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
@@ -246,7 +292,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                 element.AddTo(parent);
             }
             dbContext.SaveChanges();
-            UserStateService.LastOpenedElement = element;
+            UserStateService.SetLastOpenedElement(_currentUser.Id, element);
             NavigationManager.Refresh(true);
         }
 

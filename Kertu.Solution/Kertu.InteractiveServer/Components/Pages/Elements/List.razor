@@ -21,7 +21,9 @@
                      @onclick="() => Open(card)">
             @if (card is Models.TaskCard taskCard)
             {
-                <RadzenIcon Icon="radio_button_unchecked" class="radio-check" @onclick="() => MarkAsCompleted(taskCard)" />
+                <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                    <RadzenIcon Icon="radio_button_unchecked" class="radio-check" @onclick="() => MarkAsCompleted(taskCard)" />
+                </div>
             }
             <RadzenText Style="margin: 0">@card.Name</RadzenText>
         </RadzenStack>
@@ -41,7 +43,9 @@
         <Template Context="task">
             <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" Style="cursor: pointer"
                          @onclick="() => Open(task)">
-                <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
+                <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                    <RadzenIcon Icon="radio_button_checked" class="radio-check" @onclick="() => UnmarkAsCompleted(task)" />
+                </div>
                 <RadzenText Style="margin: 0" class="completed-text">@task.Name</RadzenText>
             </RadzenStack>
         </Template>

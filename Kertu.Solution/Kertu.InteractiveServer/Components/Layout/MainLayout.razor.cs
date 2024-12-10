@@ -14,6 +14,7 @@ namespace Kertu.InteractiveServer.Components.Layout
         private NavigationManager Navigation { get; set; }
 
         string? _userEmail;
+        string? _userID;
         bool IsAccountRoute => Navigation.Uri.Contains("/Account/");
         string Icon => _value ? "dark_mode" : "light_mode";
 
@@ -49,6 +50,12 @@ namespace Kertu.InteractiveServer.Components.Layout
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _userEmail = authState.User.Identity?.Name;
+
+            if (_userEmail == null)
+                _userID = "guest";
+            else
+                _userID = DbContext.Users.Single(u => u.UserName == _userEmail).Id;
+
             ThemeService.ThemeChanged += OnThemeChanged;
             _value = ThemeService.Theme != CurrentDarkTheme;
         }

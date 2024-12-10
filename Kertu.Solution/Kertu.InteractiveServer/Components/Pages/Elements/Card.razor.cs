@@ -6,14 +6,15 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 {
     public partial class Card : ComponentBase
     {
+        private Models.Card? _card;
+        private string _title = string.Empty;
+        private string _description = string.Empty;
+        private bool _busy;
+
         [Parameter]
         public required string Id { get; set; }
-        int IdValue => int.Parse(Id);
 
-        Models.Card? _card;
-        string _title = string.Empty;
-        string _description = string.Empty;
-        bool _busy;
+        private int IdValue => int.Parse(Id);
 
         protected override void OnInitialized()
         {
@@ -22,16 +23,18 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             {
                 return;
             }
+
             _title = _card.Name;
             _description = _card.Description;
         }
 
-        async Task OnBusyClick()
+        private async Task OnBusyClick()
         {
             if (_card is null)
             {
                 return;
             }
+
             _busy = true;
             _card.Name = _title;
             _card.Description = _description;
