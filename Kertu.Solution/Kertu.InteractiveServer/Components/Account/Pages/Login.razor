@@ -34,7 +34,7 @@
             <small>Please enter your credentials</small>
         </div>
         <div class="card-body">
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser">
+            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
 
                 @if (!string.IsNullOrEmpty(errorMessage))
