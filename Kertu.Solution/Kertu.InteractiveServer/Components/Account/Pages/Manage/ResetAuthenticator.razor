@@ -12,23 +12,71 @@
 <PageTitle>Reset authenticator key</PageTitle>
 
 <StatusMessage />
-<h3>Reset authenticator key</h3>
-<div class="alert alert-warning" role="alert">
-    <p>
-        <span class="glyphicon glyphicon-warning-sign"></span>
-        <strong>If you reset your authenticator key your authenticator app will not work until you reconfigure it.</strong>
-    </p>
-    <p>
-        This process disables 2FA until you verify your authenticator app.
-        If you do not complete your authenticator app configuration you may lose access to your account.
-    </p>
+<div class="container custom-left-align">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Reset Authenticator Key</h4>
+            <small>Reconfigure your authenticator app</small>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <p>
+                    <span class="glyphicon glyphicon-warning-sign"></span>
+                    <strong>If you reset your authenticator key, your authenticator app will not work until you reconfigure it.</strong>
+                </p>
+                <p>
+                    This process disables 2FA until you verify your authenticator app. If you do not complete the configuration, you may lose access to your account.
+                </p>
+            </div>
+            <form @formname="reset-authenticator" @onsubmit="OnSubmitAsync" method="post">
+                <AntiforgeryToken />
+                <button type="submit" class="btn btn-danger w-100">Reset Authenticator Key</button>
+            </form>
+        </div>
+    </div>
 </div>
-<div>
-    <form @formname="reset-authenticator" @onsubmit="OnSubmitAsync" method="post">
-        <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Reset authenticator key</button>
-    </form>
-</div>
+
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa); /* Subtle gradient */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Modern shadow */
+        border: none; /* Removes the default border */
+        border-radius: 15px; /* Rounded corners */
+        padding: 20px; /* Inner spacing */
+        max-width: 800px; /* Width of the card */
+        margin: 20px auto; /* Center align */
+    }
+
+    .custom-left-align {
+        margin-left: 0px; 
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 15px;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+</style>
 
 @code {
     [CascadingParameter]

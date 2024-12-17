@@ -13,7 +13,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
 
-<PageTitle>Configure authenticator app</PageTitle>
+<PageTitle>Configure Authenticator App</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -22,49 +22,101 @@
 else
 {
     <StatusMessage Message="@message" />
-    <h3>Configure authenticator app</h3>
-    <div>
-        <p>To use an authenticator app go through the following steps:</p>
-        <ol class="list">
-            <li>
-                <p>
-                    Download a two-factor authenticator app like Microsoft Authenticator for
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
-                    Google Authenticator for
-                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
-                </p>
-            </li>
-            <li>
-                <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
-                <div data-url="@authenticatorUri"></div>
-            </li>
-            <li>
-                <p>
-                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                    with a unique code. Enter the code in the confirmation box below.
-                </p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
-                            <DataAnnotationsValidator />
-                            <div class="form-floating mb-3">
-                                <InputText @bind-Value="Input.Code" class="form-control" autocomplete="off" placeholder="Please enter the code." />
-                                <label for="code" class="control-label form-label">Verification Code</label>
-                                <ValidationMessage For="() => Input.Code" class="text-danger" />
-                            </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
-                            <ValidationSummary class="text-danger" role="alert" />
-                        </EditForm>
+
+    <div class="container custom-left-align compact-container align-left">
+        <div class="card shadow border-0 rounded">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">Configure Authenticator App</h4>
+                <small class="text-light">Set up your authenticator app in a few steps</small>
+            </div>
+            <div class="card-body">
+                <p class="mb-3 small-text">Follow these steps to set up an authenticator app:</p>
+                <div class="mb-3 small-text">
+                    <strong>1. Download an authenticator app:</strong>
+                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072" class="link">Microsoft Authenticator</a> or
+                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" class="link">Google Authenticator</a>.
+                </div>
+                <div class="mb-3 small-text">
+                    <strong>2. Scan the QR Code or enter this key:</strong>
+                    <kbd class="key-box">@sharedKey</kbd>.
+                    <div class="alert alert-info compact-alert mt-2">
+                        Learn to <a href="https://go.microsoft.com/fwlink/?Linkid=852423" class="link">generate QR codes</a>.
+                    </div>
+                    <div class="text-center">
+                        <img src="@authenticatorUri" alt="QR Code" class="qr-code-image" />
                     </div>
                 </div>
-            </li>
-        </ol>
+                <div class="small-text">
+                    <strong>3. Enter the code from your app:</strong>
+                    <div class="row justify-content-center mt-2">
+                        <div class="col-md-10">
+                            <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
+                                <DataAnnotationsValidator />
+                                <div class="form-floating mb-2">
+                                    <InputText @bind-Value="Input.Code" class="form-control compact-input" autocomplete="off" placeholder="Enter code" />
+                                    <label for="code">Code</label>
+                                    <ValidationMessage For="() => Input.Code" class="text-danger" />
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Verify</button>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
+    <style>
+        .align-left {
+            margin-left: -20px; 
+        }
+        .compact-container {
+            max-width: 700px;
+            padding: 15px;
+        }
+
+        .card {
+            padding: 10px;
+        }
+
+        .small-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .compact-input {
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .key-box {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .compact-alert {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .qr-code-image {
+            max-width: 120px;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .btn-primary {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+    </style>
+
 
 @code {
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
