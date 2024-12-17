@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Pages\Elements\BoardModels\" />
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
 

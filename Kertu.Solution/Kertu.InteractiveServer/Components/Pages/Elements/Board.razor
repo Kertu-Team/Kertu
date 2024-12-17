@@ -1,12 +1,14 @@
 ﻿@page "/board/{Id}"
 
-<RadzenDropZoneContainer TItem="MyTask" Data="_data"
-                         ItemSelector="@_itemSelector"
-                         ItemRender="@OnItemRender"
-                         CanDrop="@_canDrop"
-                         Drop="@OnDrop">
+@using Models = Kertu.InteractiveServer.Data.Models.Elements
+
+<RadzenDropZoneContainer TItem="Models.Card" Data="_cards">
     <ChildContent>
         <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-p-12">
+            <RadzenDataList Data="@_lists" TItem="Models.List">
+
+            </RadzenDataList>
+
             <RadzenDropZone Value="Status.NotStarted" class="rz-display-flex rz-flex-column rz-background-color-warning-lighter rz-border-warning-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
                 <ChildContent>
                     <RadzenText Text="Not started" TextStyle="TextStyle.Subtitle2" />
@@ -35,9 +37,3 @@
         <strong>@context.Name</strong>
     </Template>
 </RadzenDropZoneContainer>
-
-<style>
-    .rz-can-drop {
-        background-color: var(--rz-background-color-primary);
-    }
-</style>
