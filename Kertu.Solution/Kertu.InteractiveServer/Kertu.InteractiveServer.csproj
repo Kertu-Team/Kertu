@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Pages\Elements\BoardModels\**" />
+    <Content Remove="Components\Pages\Elements\BoardModels\**" />
+    <EmbeddedResource Remove="Components\Pages\Elements\BoardModels\**" />
+    <None Remove="Components\Pages\Elements\BoardModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.10" />

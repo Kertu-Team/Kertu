@@ -1,43 +1,44 @@
 ﻿@page "/board/{Id}"
 
-<RadzenDropZoneContainer TItem="MyTask" Data="_data"
-                         ItemSelector="@_itemSelector"
-                         ItemRender="@OnItemRender"
-                         CanDrop="@_canDrop"
-                         Drop="@OnDrop">
+@using Models = Kertu.InteractiveServer.Data.Models.Elements
+
+<RadzenText TagName="TagName.H2">@_title</RadzenText>
+
+<RadzenDropZoneContainer TItem="Models.Element" Data="_elements" ItemSelector="@_itemSelector">
     <ChildContent>
         <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-p-12">
-            <RadzenDropZone Value="Status.NotStarted" class="rz-display-flex rz-flex-column rz-background-color-warning-lighter rz-border-warning-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
-                <ChildContent>
-                    <RadzenText Text="Not started" TextStyle="TextStyle.Subtitle2" />
-                </ChildContent>
-                <Footer>
-                    <div>
-                        <RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" />
-                    </div>
-                </Footer>
-            </RadzenDropZone>
+            @foreach (Models.Element element in _elements)
+            {
+                @if (element is Models.List list)
+                {
+                    <RadzenDropZone Value="@list.Id" class="rz-display-flex rz-flex-column rz-background-color-warning-lighter rz-border-warning-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
+                        <ChildContent>
+                            <RadzenText Text="@list.Name" TextStyle="TextStyle.Subtitle2" />
+                        </ChildContent>
+                        <Footer>
+                            <div>
+                                <RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" />
+                            </div>
+                        </Footer>
+                    </RadzenDropZone>
+                }
+                else if (element is Models.Card card)
+                {
+                    <RadzenStack class="rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
+                        <RadzenText Text="@card.Name" TextStyle="TextStyle.Subtitle2" />
+                    </RadzenStack>
+                }
+                else if (element is Models.Board board)
+                {
+                    <RadzenStack class="rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
+                        <RadzenText Text="@board.Name" TextStyle="TextStyle.Subtitle2" />
+                    </RadzenStack>
 
-            <RadzenDropZone Value="Status.Started" class="rz-display-flex rz-flex-column rz-background-color-info-lighter rz-border-info-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
-                <RadzenText Text="Started" TextStyle="TextStyle.Subtitle2" />
-            </RadzenDropZone>
-
-            <RadzenDropZone Value="Status.Completed" class="rz-display-flex rz-flex-column rz-background-color-success-lighter rz-border-success-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
-                <RadzenText Text="Completed" TextStyle="TextStyle.Subtitle2" />
-            </RadzenDropZone>
-
-            <RadzenDropZone Value="Status.Deleted" class="rz-display-flex rz-flex-column rz-background-color-danger-lighter rz-border-danger-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
-                <RadzenText Text="Drop here to delete" TextStyle="TextStyle.Subtitle2" />
-            </RadzenDropZone>
+                }
+            }
         </RadzenStack>
     </ChildContent>
     <Template>
         <strong>@context.Name</strong>
     </Template>
 </RadzenDropZoneContainer>
-
-<style>
-    .rz-can-drop {
-        background-color: var(--rz-background-color-primary);
-    }
-</style>
