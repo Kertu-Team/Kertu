@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using Kertu.InteractiveServer.Components.Pages
+@using Kertu.InteractiveServer.Components.Search
 @using Kertu.InteractiveServer.Data
 <RadzenComponents @rendermode="InteractiveServer" />
 
@@ -48,8 +49,9 @@
 					<a href="/" @onclick="OnLinkClick" @onclick:preventDefault="true" class="h-100 d-flex align-items-center">
 						<RadzenLabel Text="Kertu" style="cursor: pointer; font-size: 1.6667rem;" />
 					</a>
+					<Search />
 				</RadzenStack>
-			</RadzenStack>
+			</RadzenStack>			
 
 			@if (!IsAccountRoute)
 			{

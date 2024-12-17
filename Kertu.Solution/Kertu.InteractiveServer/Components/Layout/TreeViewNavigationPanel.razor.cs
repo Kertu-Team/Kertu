@@ -98,9 +98,9 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 NavigationManager.NavigateTo($"/list/{list.Id}", true);
             }
-            else if (item.Element is Board)
+            else if (item.Element is Board board)
             {
-                //clicked card board
+                NavigationManager.NavigateTo($"/board/{board.Id}", true);
             }
         }
 
