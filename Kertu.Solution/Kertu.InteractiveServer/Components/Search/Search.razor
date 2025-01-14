@@ -2,73 +2,71 @@
 
 @using Kertu.InteractiveServer.Data.Models.Elements
 
-<div class="search-container">
-	<div class="navbar">
-		<input @bind="SearchQuery" @oninput="OnSearchInput" placeholder="Search..." />
-		<select @bind="CurrentScope">
-			<option value="@SearchScope.Global">Search Everywhere</option>
-			<option value="@SearchScope.Children">Search in Current</option>
-		</select>
-	</div>
+<RadzenCard Style="width: 600px; position: relative; --rz-card-padding: 0;">
+	<RadzenRow>
+		<!-- Pasek wyszukiwania z ikoną "X" -->
+		<RadzenColumn Size="12">
+			<div style="display: flex; align-items: center;">
+				<!-- Pole wyszukiwania -->
+				<RadzenTextBox Value="@SearchQuery"
+							   Placeholder="Search..."
+							   Style="width: 100%; font-size: 14px; color: #333;"
+							   Change="@HandleSearchInput"
+							   @onfocus="ShowResults"
+							   AutoComplete="false"
+							   Icon="search" />
 
-	@if (SearchResults?.Any() == true)
+				<!-- Ikona zamykania "X" -->
+				<RadzenButton Icon="close"
+							Style="cursor: pointer; font-size: 20px; background-color: red; color: #333;"
+							Click="ClearSearch" />
+			</div>
+		</RadzenColumn>
+	</RadzenRow>
+
+	<!-- Dropdown z wynikami wyszukiwania -->
+	@if (ShowDropdown)
 	{
-		<ul class="search-results">
-			@foreach (var result in SearchResults)
+		<RadzenPanel Style="position: absolute; top: 100%; left: 0; width: 100%; color: #333; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 4px;">
+			<!-- Opcje zakresu wyszukiwania -->
+			<RadzenRow Style="padding: 8px;">
+				<RadzenColumn Size="6">
+					<RadzenButton Text="Search Everywhere"
+								  Click="() => SetScope(SearchScope.Global)"
+								  Class="@(CurrentScope == SearchScope.Global ? "active-option" : "")"
+								  Style="width: 100%; border: none; background: none; cursor: pointer; font-size: 14px; padding: 8px; border-radius: 4px; color: #333;" />
+				</RadzenColumn>
+				<RadzenColumn Size="6">
+					<RadzenButton Text="Search in Current"
+								  Click="() => SetScope(SearchScope.Children)"
+								  Class="@(CurrentScope == SearchScope.Children ? "active-option" : "")"
+								  Style="width: 100%; border: none; background: none; cursor: pointer; font-size: 14px; padding: 8px; border-radius: 4px; color: #333;" />
+				</RadzenColumn>
+			</RadzenRow>
+
+			<!-- Lista wyników wyszukiwania -->
+			@if (SearchResults?.Any() == true)
 			{
-				<li @onclick="() => NavigateToElement(result)">
-					<b>@result.Name</b> - @if (result is Card card)
-					{
-						@card.Description
-					}
-				</li>
+				<RadzenDataList Data="@SearchResults" Style="padding: 0;">
+					<Template Context="result">
+						<div @onclick="() => NavigateToElement(result)" style="cursor: pointer; transition: background-color 0.3s; color: #333;">
+							<RadzenLabel Text="@result.Name" />
+						</div>
+					</Template>
+				</RadzenDataList>
 			}
-		</ul>
+			else if (!string.IsNullOrWhiteSpace(SearchQuery))
+			{
+				<div style="color: #888; font-style: italic;">
+					No results found.
+				</div>
+			}
+		</RadzenPanel>
 	}
-	else if (!string.IsNullOrWhiteSpace(SearchQuery))
-	{
-		<p class="no-results">No results found.</p>
-	}
-</div>
+</RadzenCard>
 
 <style>
-	.search-container {
-		padding: 10px;
-	}
-
-	.navbar {
-		display: flex;
-		gap: 10px;
-		align-items: center;
-		margin-bottom: 10px;
-	}
-
-		.navbar input, .navbar select {
-			padding: 8px;
-			font-size: 14px;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-		}
-
-	.search-results {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-		.search-results li {
-			padding: 8px;
-			border-bottom: 1px solid #ddd;
-			cursor: pointer;
-			transition: background-color 0.3s;
-		}
-
-			.search-results li:hover {
-				background-color: #f0f0f0;
-			}
-
-	.no-results {
-		color: #888;
-		font-style: italic;
+	.active-option {
+		font-weight: bold;
 	}
 </style>
