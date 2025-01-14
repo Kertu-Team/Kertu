@@ -59,15 +59,14 @@ Kertu is a modern web application designed for project management, task organiza
 ```
 4. **Verify the application:**
 - The application should be available at http://localhost:5000 (locally) or at the configured production URL.
-
+---
 🧪 **Testing**
-**Automated QA tests:**
-
+- **Automated QA tests:**
 Tests/*
-
+---
 💡 **Additional Information**
 - For any questions or bug reports, please use the Issues section.
-
+---
 🤝 **Contributors**
 - This project is developed by the Kertu Team.
 - We welcome collaboration and suggestions for improvements!
