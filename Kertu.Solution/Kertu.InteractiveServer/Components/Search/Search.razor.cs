@@ -13,9 +13,11 @@ namespace Kertu.InteractiveServer.Components.Search
 
         public string SearchQuery { get; set; } = string.Empty;
 
+        public bool ShowDropdown { get; set; }
+
         public SearchScope CurrentScope { get; set; } = SearchScope.Global;
 
-        public List<Element> SearchResults { get; set; } = [];
+        public List<Element> SearchResults { get; set; } = new();
 
         [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
 
@@ -30,11 +32,36 @@ namespace Kertu.InteractiveServer.Components.Search
             await SetCurrentUserID();
         }
 
-        protected async Task OnSearchInput()
+        public void ShowResults()
         {
+            ShowDropdown = true;
+        }
+
+        public void HideResults()
+        {
+            ShowDropdown = false;
+        }
+
+        public void ClearSearch()
+        {
+            SearchQuery = string.Empty;
+            ShowDropdown = false;
+        }
+
+        public void SetScope(SearchScope scope)
+        {
+            CurrentScope = scope;
+            ShowResults();
+        }
+
+        public async Task HandleSearchInput(string value)
+        {
+            SearchQuery = value;
+
             if (string.IsNullOrWhiteSpace(SearchQuery))
             {
                 SearchResults.Clear();
+                HideResults();
                 return;
             }
 
@@ -43,6 +70,7 @@ namespace Kertu.InteractiveServer.Components.Search
                 : null;
 
             SearchResults = await SearchAsync(SearchQuery, CurrentScope, parentId);
+            ShowDropdown = SearchResults.Any();
         }
 
         private async Task SetCurrentUserID()
@@ -100,7 +128,7 @@ namespace Kertu.InteractiveServer.Components.Search
         public enum SearchScope
         {
             Global,
-            Children
+            Children,
         }
     }
 }
