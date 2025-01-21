@@ -3,6 +3,7 @@ using Kertu.InteractiveServer.Data.Models;
 using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Radzen.Blazor;
@@ -154,85 +155,152 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         void MoveElementUp(Element element)
         {
-            int index = dbContext
-                .Elements.Single(e => e.Id == element.ParentID)
-                .GetChildren()
-                .OrderBy(e => e.Position)
-                .ToList()
-                .IndexOf(element);
-
-            Console.WriteLine(
-                $"[!!!!!!] element:{element.Name} parent:{dbContext.Elements.Single(e => e.Id == element.ParentID).Name}. index:{index}"
-            );
-
-            if (index > 0)
+            if (element.ParentID == null)
             {
-                int higherId = dbContext
-                    .Elements.Single(e => e.Id == element.ParentID)
-                    .GetChildren()
+                int index = dbContext
+                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                     .OrderBy(e => e.Position)
-                    .ToList()[index - 1].Id;
+                    .ToList()
+                    .IndexOf(element);
 
-                int currentId = dbContext
-                    .Elements.Single(e => e.Id == element.ParentID)
-                    .GetChildren()
-                    .OrderBy(e => e.Position)
-                    .ToList()[index].Id;
+                if (index > 0)
+                {
+                    int higherId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index - 1].Id;
 
-                int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
+                    int currentId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index].Id;
 
-                dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
+                    int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
 
-                dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+                    dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
 
-                dbContext.SaveChanges();
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+
+                    dbContext.SaveChanges();
+                }
+
+                NavigationManager.Refresh(true);
             }
-            NavigationManager.Refresh(true);
+            else
+            {
+                int index = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                if (index > 0)
+                {
+                    int higherId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index - 1].Id;
+
+                    int currentId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index].Id;
+
+                    int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
+            }
+
         }
+
         void MoveElementDown(Element element)
         {
-            int index = dbContext
-                .Elements.Single(e => e.Id == element.ParentID)
-                .GetChildren()
-                .OrderBy(e => e.Position)
-                .ToList()
-                .IndexOf(element);
 
-            int count = dbContext
-                .Elements.Single(e => e.Id == element.ParentID)
-
-                .GetChildren()
-                .OrderBy(e => e.Position)
-                .ToList()
-                .Count();
-
-            Console.WriteLine(
-                $"[!!!!!!] element:{element.Name} parent:{dbContext.Elements.Single(e => e.Id == element.ParentID).Name}. index:{index}"
-            );
-
-            if (index < count-1)
+            if (element.ParentID == null)
             {
-                int lowerId = dbContext
-                    .Elements.Single(e => e.Id == element.ParentID)
-                    .GetChildren()
+                int index = dbContext
+                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                     .OrderBy(e => e.Position)
-                    .ToList()[index + 1].Id;
+                    .ToList()
+                    .IndexOf(element);
 
-                int currentId = dbContext
-                    .Elements.Single(e => e.Id == element.ParentID)
-                    .GetChildren()
+                int count = dbContext
+                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                     .OrderBy(e => e.Position)
-                    .ToList()[index].Id;
+                    .ToList()
+                    .Count();
 
-                int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
+                if (index < count - 1)
+                {
+                    int lowerId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index + 1].Id;
 
-                dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+                    int currentId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index].Id;
 
-                dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+                    int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
 
-                dbContext.SaveChanges();
+                    dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
             }
-            NavigationManager.Refresh(true);
+            else
+            {
+                int index = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                int count = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .Count();
+
+                if (index < count - 1)
+                {
+                    int lowerId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index + 1].Id;
+
+                    int currentId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index].Id;
+
+                    int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
+            }
         }
 
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
@@ -440,6 +508,11 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             if (parent == null)
             {
+                if(_currentUser.UserElements.Count > 0)
+                {
+                    element.Position = _currentUser.UserElements.OrderBy(e => e.Position).Last().Position + 1;
+                }
+
                 _currentUser.UserElements.Add(element);
             }
             else
