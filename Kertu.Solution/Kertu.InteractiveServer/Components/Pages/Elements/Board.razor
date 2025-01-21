@@ -4,7 +4,7 @@
 
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
 
-<RadzenDropZoneContainer TItem="Models.Element" Data="_elements" ItemSelector="@_itemSelector">
+<RadzenDropZoneContainer TItem="Models.Card" Data="_childrenCards" ItemSelector="@_itemSelector">
     <ChildContent>
         <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-p-12">
             @foreach (Models.Element element in _elements)
