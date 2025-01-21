@@ -19,6 +19,7 @@ jobs:
       # Emails to which notifications about success or failure will be sent
       CONTACT_EMAILS: kamilszot404@gmail.com, 28862@s.pm.szczecin.pl
 
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -31,7 +32,7 @@ jobs:
       - name: Merge Branches
         run: |
           git fetch origin
-          git checkout $TARGET_BRANCH
+          git checkout origin/$TARGET_BRANCH -B $TARGET_BRANCH
           git merge origin/$SOURCE_BRANCH
           git push origin $TARGET_BRANCH
         env:

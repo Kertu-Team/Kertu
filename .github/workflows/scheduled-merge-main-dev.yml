@@ -31,7 +31,7 @@ jobs:
       - name: Merge Branches
         run: |
           git fetch origin
-          git checkout $TARGET_BRANCH
+          git checkout origin/$TARGET_BRANCH -B $TARGET_BRANCH
           git merge origin/$SOURCE_BRANCH
           git push origin $TARGET_BRANCH
         env:
