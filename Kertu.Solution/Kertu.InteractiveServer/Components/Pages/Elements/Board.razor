@@ -1,5 +1,5 @@
 ﻿@page "/board/{Id}"
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 @using Models = Kertu.InteractiveServer.Data.Models.Elements
 
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
@@ -11,32 +11,32 @@
             {
                 @if (element is Models.List list)
                 {
-                    <RadzenDropZone Value="@list.Id" class="rz-display-flex rz-flex-column rz-background-color-warning-lighter rz-border-warning-light rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
-                        <ChildContent>
-                            <RadzenText Text="@list.Name" TextStyle="TextStyle.Subtitle2" />
-                        </ChildContent>
-                        <Footer>
-                            <div>
-                                <RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" />
-                            </div>
-                        </Footer>
-                    </RadzenDropZone>
+					<RadzenDropZone Value="@list.Id" class="list-container">
+						<ChildContent>
+							<span class="material-symbols-outlined">list_alt</span>
+							<RadzenText Text="@list.Name" TextStyle="TextStyle.Subtitle2" class="list-name" />
+						</ChildContent>
+						<Footer>
+							<div>
+								<RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" />
+							</div>
+						</Footer>
+					</RadzenDropZone>
                 }
                 else if (element is Models.Card card)
                 {
-                    <RadzenStack class="clickable-item rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4"
-                                 Style="flex: 1; gap: 1rem;"
-                                 @onclick="() => OnElementClick(element)">
-                        <RadzenText Text="@card.Name" TextStyle="TextStyle.Subtitle2" />
-                    </RadzenStack>
+					<RadzenStack class="card-item" @onclick="() => OnElementClick(element)">
+						<span class="material-symbols-outlined">edit_square</span>
+						<RadzenText Text="@card.Name" TextStyle="TextStyle.Subtitle2" class="card-name" />
+					</RadzenStack>
+
                 }
                 else if (element is Models.Board board)
                 {
-                    <RadzenStack class="clickable-item rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4"
-                                 Style="flex: 1; gap: 1rem;"
-                                 @onclick="() => OnElementClick(element)">
-                        <RadzenText Text="@board.Name" TextStyle="TextStyle.Subtitle2" />
-                    </RadzenStack>
+					<RadzenStack class="board-item" @onclick="() => OnElementClick(element)">
+						<span class="material-symbols-outlined">developer_board</span>
+						<RadzenText Text="@board.Name" TextStyle="TextStyle.Subtitle2" class="board-name" />
+					</RadzenStack>
                 }
             }
         </RadzenStack>
@@ -47,7 +47,106 @@
 </RadzenDropZoneContainer>
 
 <style>
-    .clickable-item {
-        cursor: pointer;
+	@@keyframes gradientAnimation {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
     }
+	.list-container {
+		display: flex;
+		flex-direction: column; /* Stack icon, text, and button vertically */
+		justify-content: center; /* Center content vertically */
+		align-items: center; /* Center content horizontally */
+		background-color: #FFF3E0;
+		border: 2px solid #FFC107;
+		border-radius: 8px;
+		padding: 16px;
+		width: 250px;
+		height: 320px;
+		gap: 8px; /* Space between icon, text, and button */
+		text-align: center; /* Center-align text */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		background: linear-gradient(45deg, #3f0202, #be5252, #ff0039, #0081e8);
+		background-size: 300% 300%;
+		animation: gradientAnimation 6s ease infinite;
+		
+	}
+
+	.card-item {
+		cursor: pointer;
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 8px;
+		padding: 16px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		width: 250px;
+		height: 250px;
+		gap: 16px;
+		background: linear-gradient(45deg, #06866e, #52be96, #00ff68, #e87c00);
+		background-size: 300% 300%;
+		animation: gradientAnimation 6s ease infinite;
+	}
+
+		.card-item:hover {
+			transform: scale(1.05);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		}
+
+	.board-item {
+		cursor: pointer;
+		background-color: #a159cf;
+		color: white;
+		border-radius: 8px;
+		padding: 16px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		width: 250px;
+		height: 250px;
+		gap: 16px;
+		background: linear-gradient(45deg, #860988, #e67df2, #f600b4, #1f00e8);
+        background-size: 300% 300%;
+        animation: gradientAnimation 6s ease infinite;
+	}
+	.list-name,
+	.card-name,
+	.board-name {
+		font-size: 18px; /* Larger font size */
+		font-weight: bold; /* Make the text bold */
+		text-transform: uppercase; /* Uppercase styling for clarity */
+		margin-top: 8px; /* Add spacing from the icon */
+		letter-spacing: 1px; /* Slightly increase letter spacing */
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
+	}
+
+		.board-item:hover {
+			transform: scale(1.05);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		}
+
+	.clickable-item {
+		cursor: pointer;
+	}
+
+	.material-symbols-outlined {
+		font-family: 'Material Symbols Outlined', sans-serif;
+		font-size: 150px; /* Increase the icon size */
+		color: white;
+		line-height: 1;
+	}
 </style>
