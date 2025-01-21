@@ -36,7 +36,10 @@ namespace Kertu.InteractiveServer.Components.Layout
                 return;
             }
 
-            var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == _currentUser).UserElements;
+            var elements = dbContext
+                .Users.Include(u => u.UserElements)
+                .Single(u => u == _currentUser)
+                .UserElements.OrderBy(e => e.Position);
             foreach (var element in elements)
             {
                 TreeViewItem treeViewItem = new(element);
@@ -149,6 +152,81 @@ namespace Kertu.InteractiveServer.Components.Layout
             ContextMenuService.Open(args, items, action);
         }
 
+        void MoveElementUp(Element element)
+        {
+            int index = dbContext
+                .Elements.Single(e => e.Id == element.ParentID)
+                .GetChildren()
+                .OrderBy(e => e.Position)
+                .ToList()
+                .IndexOf(element);
+
+            Console.WriteLine(
+                $"[!!!!!!] element:{element.Name} parent:{dbContext.Elements.Single(e => e.Id == element.ParentID).Name}. index:{index}"
+            );
+
+            if (index > 0)
+            {
+                int higher = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()[index - 1]
+                    .Position;
+                dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()[index - 1]
+                    .Position = element.Position;
+                dbContext.Elements.Single(e => e.Id == element.ParentID).GetChildren().OrderBy(e => e.Position).ToList()[index].Position =
+                    higher;
+                dbContext.SaveChanges();
+            }
+            NavigationManager.Refresh(true);
+        }
+        void MoveElementDown(Element element)
+        {
+            int index = dbContext
+                .Elements.Single(e => e.Id == element.ParentID)
+                .GetChildren()
+                .OrderBy(e => e.Position)
+                .ToList()
+                .IndexOf(element);
+
+            int count = dbContext
+                .Elements.Single(e => e.Id == element.ParentID)
+
+                .GetChildren()
+                .OrderBy(e => e.Position)
+                .ToList()
+                .Count();
+
+            Console.WriteLine(
+                $"[!!!!!!] element:{element.Name} parent:{dbContext.Elements.Single(e => e.Id == element.ParentID).Name}. index:{index}"
+            );
+
+            if (index < count-1)
+            {
+                int higher = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()[index - 1]
+                    .Position;
+                dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()[index - 1]
+                    .Position = element.Position;
+                dbContext.Elements.Single(e => e.Id == element.ParentID).GetChildren().OrderBy(e => e.Position).ToList()[index].Position =
+                    higher;
+                dbContext.SaveChanges();
+            }
+            NavigationManager.Refresh(true);
+        }
+
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
         {
             Action<MenuItemEventArgs> action = async (e) =>
@@ -174,6 +252,16 @@ namespace Kertu.InteractiveServer.Components.Layout
                     case 3:
                         await DeleteElement((args.Value as TreeViewItem).Element);
                         break;
+
+                    case 41:
+                        MoveElementUp((args.Value as TreeViewItem).Element);
+                        break;
+                    case 42:
+
+                        break;
+                    case 43:
+
+                        break;
                 }
             };
 
@@ -195,6 +283,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Value = 3,
                         Icon = "delete_forever",
                     },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
+                    },
                 ];
             }
             else if ((args.Value as TreeViewItem).Element is List)
@@ -206,6 +313,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Text = "Add card",
                         Value = 11,
                         Icon = "post_add",
+                    },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
                     },
                     new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
@@ -243,6 +369,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Text = "Add board",
                         Value = 13,
                         Icon = "dashboard_customize",
+                    },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
                     },
                     new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
@@ -343,6 +488,8 @@ namespace Kertu.InteractiveServer.Components.Layout
             dbContext.SaveChanges();
         }
 
+        Random random = new();
+
         private List<TreeViewItem> LoadTree(IQueryable<Element> parent)
         {
             List<TreeViewItem> treeViewItems = new();
@@ -350,18 +497,20 @@ namespace Kertu.InteractiveServer.Components.Layout
             if (parent.First() is List)
             {
                 var list = parent.Cast<List>();
-                children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+                children = list.Include(kl => kl.Children).First().Children.Cast<Element>().OrderBy(e => e.Position).ToList();
             }
             else if (parent.First() is Board)
             {
                 var board = parent.Cast<Board>();
-                children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+                children = board.Include(kl => kl.Children).First().Children.Cast<Element>().OrderBy(e => e.Position).ToList();
             }
 
             foreach (var child in children)
             {
+                if (child.Position == 0)
+                    child.Position = children.OrderBy(e => e.Position).First().Position - 1;
                 TreeViewItem item = new(child);
-                var fromDB = dbContext.Elements.Where(ke => ke == child);
+                var fromDB = dbContext.Elements.Where(ke => ke == child).OrderBy(e => e.Position);
                 item.Children = LoadTree(fromDB);
                 treeViewItems.Add(item);
             }
