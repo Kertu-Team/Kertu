@@ -24,16 +24,19 @@
                 }
                 else if (element is Models.Card card)
                 {
-                    <RadzenStack class="rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
+                    <RadzenStack class="clickable-item rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4"
+                                 Style="flex: 1; gap: 1rem;"
+                                 @onclick="() => OnElementClick(element)">
                         <RadzenText Text="@card.Name" TextStyle="TextStyle.Subtitle2" />
                     </RadzenStack>
                 }
                 else if (element is Models.Board board)
                 {
-                    <RadzenStack class="rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4" Style="flex: 1; gap: 1rem;">
+                    <RadzenStack class="clickable-item rz-background-color-primary rz-border-primary rz-border-radius-2 rz-p-4"
+                                 Style="flex: 1; gap: 1rem;"
+                                 @onclick="() => OnElementClick(element)">
                         <RadzenText Text="@board.Name" TextStyle="TextStyle.Subtitle2" />
                     </RadzenStack>
-
                 }
             }
         </RadzenStack>
@@ -42,3 +45,9 @@
         <strong>@context.Name</strong>
     </Template>
 </RadzenDropZoneContainer>
+
+<style>
+    .clickable-item {
+        cursor: pointer;
+    }
+</style>
