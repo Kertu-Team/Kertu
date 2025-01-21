@@ -167,20 +167,24 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             if (index > 0)
             {
-                int higher = dbContext
+                int higherId = dbContext
                     .Elements.Single(e => e.Id == element.ParentID)
                     .GetChildren()
                     .OrderBy(e => e.Position)
-                    .ToList()[index - 1]
-                    .Position;
-                dbContext
+                    .ToList()[index - 1].Id;
+
+                int currentId = dbContext
                     .Elements.Single(e => e.Id == element.ParentID)
                     .GetChildren()
                     .OrderBy(e => e.Position)
-                    .ToList()[index - 1]
-                    .Position = element.Position;
-                dbContext.Elements.Single(e => e.Id == element.ParentID).GetChildren().OrderBy(e => e.Position).ToList()[index].Position =
-                    higher;
+                    .ToList()[index].Id;
+
+                int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
+
+                dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
+
+                dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+
                 dbContext.SaveChanges();
             }
             NavigationManager.Refresh(true);
@@ -208,20 +212,24 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             if (index < count-1)
             {
-                int higher = dbContext
+                int lowerId = dbContext
                     .Elements.Single(e => e.Id == element.ParentID)
                     .GetChildren()
                     .OrderBy(e => e.Position)
-                    .ToList()[index - 1]
-                    .Position;
-                dbContext
+                    .ToList()[index + 1].Id;
+
+                int currentId = dbContext
                     .Elements.Single(e => e.Id == element.ParentID)
                     .GetChildren()
                     .OrderBy(e => e.Position)
-                    .ToList()[index - 1]
-                    .Position = element.Position;
-                dbContext.Elements.Single(e => e.Id == element.ParentID).GetChildren().OrderBy(e => e.Position).ToList()[index].Position =
-                    higher;
+                    .ToList()[index].Id;
+
+                int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
+
+                dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+
+                dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+
                 dbContext.SaveChanges();
             }
             NavigationManager.Refresh(true);
@@ -257,7 +265,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                         MoveElementUp((args.Value as TreeViewItem).Element);
                         break;
                     case 42:
-
+                        MoveElementDown((args.Value as TreeViewItem).Element);
                         break;
                     case 43:
 
