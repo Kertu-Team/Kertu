@@ -8,9 +8,14 @@ namespace Kertu.InteractiveServer.Data.Models
     public class TreeViewItem(Element element)
     {
         public Element Element { get; set; } = element;
+
         public List<TreeViewItem> Children { get; set; } = [];
 
-        public string Name { get => Element.Name; set => Element.Name = value; }
+        public string Name
+        {
+            get => Element.Name;
+            set => Element.Name = value;
+        }
 
         public string GetIcon()
         {

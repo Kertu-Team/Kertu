@@ -13,6 +13,7 @@ namespace Kertu.InteractiveServer.Data.Models.Elements
     {
         [Key]
         public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
@@ -28,13 +29,17 @@ namespace Kertu.InteractiveServer.Data.Models.Elements
         [ForeignKey(nameof(ApplicationUser))]
         [Column(TypeName = "varchar(255)")]
         public string? ApplicationUserId { get; set; }
+
         public virtual ApplicationUser? ApplicationUser { get; set; }
 
         [Column(TypeName = "varchar(255)")]
         public string? OwnerId { get; set; }
+
         public virtual ApplicationUser? Owner { get; set; }
 
         public int? ParentID { get; set; }
+
+        public int Position { get; set; }
 
         /// <summary>
         /// Adds this element as a child of another element. Ensure that the parent element exists in the database, because it needs to have ID
@@ -49,6 +54,7 @@ namespace Kertu.InteractiveServer.Data.Models.Elements
             }
             else if (element is List list)
             {
+                this.Position = element.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
                 list.Children.Add(this as Card);
                 this.ParentID = list.Id;
             }
@@ -56,18 +62,21 @@ namespace Kertu.InteractiveServer.Data.Models.Elements
             {
                 if (this is Card c)
                 {
+                    this.Position = element.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
                     board.Children.Add(c);
-                    this.ParentID = c.Id;
+                    this.ParentID = board.Id;
                 }
                 else if (this is List l)
                 {
+                    this.Position = element.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
                     board.Children.Add(l);
-                    this.ParentID = l.Id;
+                    this.ParentID = board.Id;
                 }
                 else if (this is Board b)
                 {
+                    this.Position = element.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
                     board.Children.Add(b);
-                    this.ParentID = b.Id;
+                    this.ParentID = board.Id;
                 }
             }
         }
