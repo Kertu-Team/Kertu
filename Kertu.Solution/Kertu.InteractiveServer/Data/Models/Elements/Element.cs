@@ -38,6 +38,8 @@ namespace Kertu.InteractiveServer.Data.Models.Elements
         public virtual ApplicationUser? Owner { get; set; }
 
         public int? ParentID { get; set; }
+        public int? ListID { get; set; }
+        public int? BoardID { get; set; }
 
         public int Position { get; set; }
 

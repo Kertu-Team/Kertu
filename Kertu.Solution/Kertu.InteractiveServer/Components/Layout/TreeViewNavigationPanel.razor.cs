@@ -1,10 +1,12 @@
-﻿using Kertu.InteractiveServer.Data;
+﻿using System.Text.Json;
+using Kertu.InteractiveServer.Data;
 using Kertu.InteractiveServer.Data.Models;
 using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
 
@@ -303,6 +305,31 @@ namespace Kertu.InteractiveServer.Components.Layout
             }
         }
 
+        async Task MoveElementElsewhere(Element element)
+        {
+            await DialogService.OpenAsync<ItemMover>($"Move...",
+               new Dictionary<string, object>() { { "ElementId", element.Id } },
+               new DialogOptions()
+               {
+                   Resizable = false,
+                   Draggable = false,
+                   CloseDialogOnOverlayClick = true,
+                   Width = "700px",
+                   Height =  "512px",
+                   Left = null,
+                   Top = null
+               });
+
+            await SaveStateAsync();
+        }
+
+        private async Task SaveStateAsync()
+        {
+            await Task.CompletedTask;
+
+            NavigationManager.Refresh(true);
+        }
+
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
         {
             Action<MenuItemEventArgs> action = async (e) =>
@@ -336,7 +363,7 @@ namespace Kertu.InteractiveServer.Components.Layout
                         MoveElementDown((args.Value as TreeViewItem).Element);
                         break;
                     case 43:
-
+                        MoveElementElsewhere((args.Value as TreeViewItem).Element);
                         break;
                 }
             };
