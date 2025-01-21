@@ -1,4 +1,5 @@
 ﻿using Kertu.InteractiveServer.Data;
+using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -60,25 +61,19 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 
         private void OnDrop(RadzenDropZoneItemEventArgs<Models.Card> args)
         {
-            if (args.FromZone != args.ToZone)
+            // Update item zone
+            DbContext.Elements.Single(e => e.Id == args.Item.Id).ParentID = null;
+            DbContext.Elements.Single(e => e.Id == args.Item.Id).ListID = null;
+            DbContext.Elements.Single(e => e.Id == args.Item.Id).BoardID = null;
+            if (DbContext.Elements.Any(e => e.ParentID == (int?)args.ToZone.Value))
             {
-                // update item zone
-                // TODO: FIX, NULLIFY IT
-                args.Item.ParentID = (int?)args.ToZone.Value;
-                if (DbContext.Elements.Any(e => e.ParentID == IdValue))
-                {
-                    args.Item.Position = DbContext.Elements.Where(e => e.ParentID == IdValue).OrderBy(e => e.Position).Last().Position + 1;
-                }
+                args.Item.Position =
+                    DbContext.Elements.Where(e => e.ParentID == (int?)args.ToZone.Value).OrderBy(e => e.Position).Last().Position + 1;
             }
-
-            if (args.ToItem != null && args.ToItem != args.Item)
-            {
-                // reorder items in same zone or place the item at specific index in new zone
-                // data.Remove(args.Item);
-                // data.Insert(data.IndexOf(args.ToItem), args.Item);
-            }
+            DbContext.Elements.Single(e => e.Id == args.Item.Id).AddTo(DbContext.Elements.Single(b => b.Id == (int?)args.ToZone.Value));
 
             DbContext.SaveChanges();
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
 
         private void CreateItem() { }
