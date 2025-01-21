@@ -38,10 +38,11 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
                 .Single(b => b.Id == IdValue);
 
             _title = board.Name;
-            _elements = board.Children;
+            _elements = board.Children.OrderBy(e => e.Position).ToList();
             _childrenCards = _elements
                 .OfType<Models.List>() // Filter elements to only those of type List
                 .SelectMany(list => list.Children) // Select all children (Cards) from each List
+                .OrderBy(e => e.Position)
                 .ToList(); // Convert the result to a List<Models.Card>
         }
 
@@ -55,6 +56,29 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             {
                 NavigationManager.NavigateTo($"/board/{board.Id}", true);
             }
+        }
+
+        private void OnDrop(RadzenDropZoneItemEventArgs<Models.Card> args)
+        {
+            if (args.FromZone != args.ToZone)
+            {
+                // update item zone
+                // TODO: FIX, NULLIFY IT
+                args.Item.ParentID = (int?)args.ToZone.Value;
+                if (DbContext.Elements.Any(e => e.ParentID == IdValue))
+                {
+                    args.Item.Position = DbContext.Elements.Where(e => e.ParentID == IdValue).OrderBy(e => e.Position).Last().Position + 1;
+                }
+            }
+
+            if (args.ToItem != null && args.ToItem != args.Item)
+            {
+                // reorder items in same zone or place the item at specific index in new zone
+                // data.Remove(args.Item);
+                // data.Insert(data.IndexOf(args.ToItem), args.Item);
+            }
+
+            DbContext.SaveChanges();
         }
 
         private void CreateItem() { }

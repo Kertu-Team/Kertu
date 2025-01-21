@@ -1,4 +1,6 @@
-﻿using Kertu.InteractiveServer.Data.Models.Elements;
+﻿using System.Linq.Dynamic.Core;
+using Kertu.InteractiveServer.Data;
+using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         private string _newCardName = string.Empty;
         private List<Models.Card> _active = [];
         private List<Models.TaskCard> _completed = [];
+        private ApplicationUser _currentUser = default!;
 
         // Field to track the visibility of completed tasks
         private bool _showCompleted = false;
@@ -24,12 +27,13 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
 
         protected override void OnInitialized()
         {
+            _currentUser = dbContext.Users.Single(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name);
             Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
             _title = list.Name;
 
             // Separate active and completed cards
-            _active = list.Children.Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted).ToList();
-            _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).ToList();
+            _active = list.Children.Where(card => card is not TaskCard taskCard || !taskCard.IsCompleted).OrderBy(e => e.Position).ToList();
+            _completed = list.Children.OfType<TaskCard>().Where(task => task.IsCompleted).OrderBy(e => e.Position).ToList();
         }
 
         private async Task MarkAsCompleted(Models.TaskCard task)
@@ -59,7 +63,18 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
         {
             if (!string.IsNullOrWhiteSpace(_newCardName))
             {
-                Models.Card newCard = new() { Name = _newCardName, Description = string.Empty };
+                Models.Card newCard =
+                    new()
+                    {
+                        Name = _newCardName,
+                        Description = string.Empty,
+                        Owner = _currentUser,
+                        ParentID = IdValue,
+                    };
+                if (dbContext.Elements.Any(e => e.ParentID == IdValue))
+                {
+                    newCard.Position = dbContext.Elements.Where(e => e.ParentID == IdValue).OrderBy(e => e.Position).Last().Position + 1;
+                }
 
                 // Get the current list
                 Models.List list = dbContext.Lists.Include(l => l.Children).Single(l => l.Id == IdValue);
