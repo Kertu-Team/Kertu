@@ -1,0 +1,29 @@
+﻿@using Data
+@using Data.Models
+@using Kertu.InteractiveServer.Data.Models.Elements
+@using Microsoft.EntityFrameworkCore
+
+@inject ApplicationDbContext dbContext
+@inject Account.IdentityUserAccessor UserAccessor
+@inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager NavigationManager
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+@inject Services.UserStateService UserStateService
+
+<div style="display: flex;
+            flex-direction: column;
+            height: 100%;">
+    <RadzenStack class="rz-m-3">
+        <RadzenTree Data="@_treeViewItems" @ref=_tree Change="OnChange" @bind-Value=@_selection>
+            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true) Expanded="@ShouldExpand">
+                <Template Context="context">
+                    <RadzenIcon Icon=@((context.Value as TreeViewItem).GetIcon()) />
+                    <b style="user-select: none;">@context.Text</b>
+                </Template>
+            </RadzenTreeLevel>
+
+        </RadzenTree>
+    </RadzenStack>
+
+</div>
