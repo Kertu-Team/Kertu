@@ -13,9 +13,11 @@ namespace Kertu.InteractiveServer.Data.Models
 
         public string Name
         {
-            get => Element.Name;
-            set => Element.Name = value;
+            get => Element != null ? Element.Name : specialName;
+            set { if(Element != null) Element.Name = value; specialName = value; } 
         }
+
+        string specialName;
 
         public string GetIcon()
         {
@@ -31,6 +33,11 @@ namespace Kertu.InteractiveServer.Data.Models
             {
                 return "space_dashboard";
             }
+            else if (Element == null)
+            {
+                return "account_circle";
+            }
+
             return "question_mark";
         }
     }

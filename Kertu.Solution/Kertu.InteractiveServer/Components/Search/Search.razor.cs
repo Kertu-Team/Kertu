@@ -3,6 +3,7 @@ using Kertu.InteractiveServer.Data.Models.Elements;
 using Kertu.InteractiveServer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kertu.InteractiveServer.Components.Search
@@ -27,14 +28,14 @@ namespace Kertu.InteractiveServer.Components.Search
 
         [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
-        protected override async Task OnInitializedAsync()
-        {
-            await SetCurrentUserID();
-        }
-
         public void ShowResults()
         {
             ShowDropdown = true;
+
+            if (string.IsNullOrWhiteSpace(SearchQuery) || !SearchResults.Any())
+            {
+                SearchResults.Clear();
+            }
         }
 
         public void HideResults()
@@ -70,7 +71,35 @@ namespace Kertu.InteractiveServer.Components.Search
                 : null;
 
             SearchResults = await SearchAsync(SearchQuery, CurrentScope, parentId);
-            ShowDropdown = SearchResults.Any();
+            ShowDropdown = true;
+        }
+
+        public void HandleKeyPress(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                if (string.IsNullOrWhiteSpace(SearchQuery) || !SearchResults.Any())
+                {
+                    ShowResults();
+                }
+                else
+                {
+                    ShowResults();
+                }
+            }
+        }
+
+        public string GetThemeClass()
+        {
+            return ThemeService.Theme == "material-dark" ? "dark-theme" : "light-theme";
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await SetCurrentUserID();
+
+            ThemeService.ThemeChanged += () =>
+                StateHasChanged();
         }
 
         private async Task SetCurrentUserID()
@@ -94,15 +123,18 @@ namespace Kertu.InteractiveServer.Components.Search
                 searchQuery = searchQuery.Where(e => e.ParentID == parentId);
             }
 
+            // Zamiana zapytania na małe litery
+            query = query.ToLower();
+
             // Wyszukiwanie po Name dla wszystkich elementów
             var nameResults = await searchQuery
-                .Where(e => EF.Functions.Like(e.Name, $"%{query}%"))
+                .Where(e => EF.Functions.Like(e.Name.ToLower(), $"%{query}%"))
                 .ToListAsync();
 
             // Wyszukiwanie po Description tylko dla Card
             var descriptionResults = await DbContext.Elements
                 .OfType<Card>() // Wybiera tylko elementy typu Card
-                .Where(c => EF.Functions.Like(c.Description, $"%{query}%"))
+                .Where(c => EF.Functions.Like(c.Description.ToLower(), $"%{query}%"))
                 .ToListAsync();
 
             // Połączenie wyników
@@ -114,13 +146,13 @@ namespace Kertu.InteractiveServer.Components.Search
             switch (element)
             {
                 case Card card:
-                    NavigationManager.NavigateTo($"/card/{card.Id}");
+                    NavigationManager.NavigateTo($"/card/{card.Id}", true);
                     break;
                 case List list:
-                    NavigationManager.NavigateTo($"/list/{list.Id}");
+                    NavigationManager.NavigateTo($"/list/{list.Id}", true);
                     break;
                 case Board board:
-                    NavigationManager.NavigateTo($"/board/{board.Id}");
+                    NavigationManager.NavigateTo($"/board/{board.Id}", true);
                     break;
             }
         }

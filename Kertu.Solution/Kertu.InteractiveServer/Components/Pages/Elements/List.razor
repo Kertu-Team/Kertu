@@ -6,6 +6,8 @@
 
 @inject ApplicationDbContext dbContext
 @inject NavigationManager navigationManager
+@inject Account.IdentityUserAccessor userAccessor
+@inject IHttpContextAccessor httpContextAccessor
 
 <RadzenText TagName="TagName.H2">@_title</RadzenText>
 
