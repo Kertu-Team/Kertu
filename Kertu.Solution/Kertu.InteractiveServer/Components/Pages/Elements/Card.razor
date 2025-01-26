@@ -1,9 +1,18 @@
 ﻿@page "/card/{Id}"
+<link rel="stylesheet" href="Card.css" />
 
 @using Kertu.InteractiveServer.Data;
 
 @inject ApplicationDbContext dbContext
 @inject NotificationService notificationService
+
+<div class="aurora-background">
+	<div class="aurora"></div>
+	<div class="aurora"></div>
+	<div class="aurora"></div>
+</div>
+
+
 
 <RadzenStack Gap="8px" class="h-100">
     <RadzenTextBox Placeholder="Title..." class="w-100" aria-label="Card title" @bind-Value=@_title />
@@ -11,3 +20,48 @@
         UploadUrl="upload/image" />
     <RadzenButton style="width: 160px" Icon="save" BusyText="Saving ..." IsBusy=@_busy Click=@OnBusyClick Text="Save" />
 </RadzenStack>
+
+<style>
+.aurora-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+		background: radial-gradient(circle, rgb(0 206 255) 0%, rgb(5 8 83 / 90%) 100%);
+    overflow: hidden;
+}
+
+.aurora {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(58,123,213,0.7), rgba(0,210,255,0.5), rgba(58,123,213,0.7));
+    animation: auroraMove 10s ease-in-out infinite;
+    filter: blur(60px);
+    opacity: 0.4;
+}
+
+.aurora:nth-child(2) {
+    animation-delay: 3s;
+}
+.aurora:nth-child(3) {
+    animation-delay: 6s;
+}
+
+@@keyframes auroraMove {
+    0% {
+        transform: translate(-20%, -20%) scale(1.2);
+    }
+    50% {
+        transform: translate(20%, 20%) scale(1);
+    }
+    100% {
+        transform: translate(-20%, -20%) scale(1.2);
+    }
+}
+
+
+</style>

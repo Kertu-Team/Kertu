@@ -32,6 +32,19 @@
 	</Authorized>
 </AuthorizeView>
 <style>
+	@@keyframes gradientAnimation {
+		0% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+
+		100% {
+			background-position: 0% 50%;
+		}
+	}
 	body {
 		background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://www.transparenttextures.com/patterns/gray-sand.png');
 		background-size: cover; /* Ensures it covers the entire screen */
@@ -67,10 +80,13 @@
 	}
 
 	.home-background {
-		background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* Gradient colors */
+		background: linear-gradient(60deg, #34dbfd, #04175d, #22bae9, #012a4b); /* Gradient colors */
 		min-height: 100vh;
 		padding: 0; /* Adjust padding if needed */
-		color: #333; /* Adjust text color for contrast */
+		color: #533; /* Adjust text color for contrast */
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		background-size: 300% 300%;
+		animation: gradientAnimation 18s ease infinite;
 	}
 
 	.welcome-card p {
