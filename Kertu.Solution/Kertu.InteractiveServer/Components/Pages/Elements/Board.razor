@@ -18,7 +18,7 @@
 						</ChildContent>
 						<Footer>
 							<div>
-								<RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@CreateItem" />
+								<RadzenButton Size="ButtonSize.ExtraSmall" Icon="add" ButtonStyle="ButtonStyle.Success" Click="@(() => CreateItem(list))" />
 							</div>
 						</Footer>
 					</RadzenDropZone>
@@ -45,6 +45,46 @@
         <strong>@context.Name</strong>
     </Template>
 </RadzenDropZoneContainer>
+
+@code {
+    private async Task CreateItem(Models.List list)
+    {
+        string name = "New Card";
+        string selectedType = "Card";
+
+        var result = await DialogService.OpenAsync("Add new Card", d =>
+    @<RadzenStack Gap="1.5rem">
+        <RadzenTextBox @bind-Value="name" />
+        <RadzenDropDown @bind-Value=@selectedType Data=@(new[] { "Card", "TaskCard" }) />
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Ok" Click="() => { AddCard(list, name, selectedType); d.Close(null); }" Style="width: 80px;" />
+                <RadzenButton Text="Cancel" Click="() => d.Close(null)" ButtonStyle="ButtonStyle.Light" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+        );
+    }
+
+    private void AddCard(Models.List parent, string name, string cardType)
+    {
+        Models.Card card = cardType == "TaskCard"
+            ? new Models.TaskCard { Name = name }
+            : new Models.Card { Name = name };
+
+        DbContext.Add(card);
+        DbContext.SaveChanges();
+
+        card.AddTo(parent);
+        if (parent.Children.Any())
+        {
+            card.Position = parent.Children.OrderBy(e => e.Position).Last().Position + 1;
+        }
+
+        DbContext.SaveChanges();
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+}
 
 <style>
 	@@keyframes gradientAnimation {
@@ -76,7 +116,7 @@
 		background: linear-gradient(45deg, #3f0202, #be5252, #ff0039, #0081e8);
 		background-size: 300% 300%;
 		animation: gradientAnimation 6s ease infinite;
-		
+
 	}
 
 	.card-item {

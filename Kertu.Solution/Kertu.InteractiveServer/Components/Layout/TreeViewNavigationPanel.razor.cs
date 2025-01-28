@@ -170,12 +170,14 @@ namespace Kertu.InteractiveServer.Components.Layout
                     int higherId = dbContext
                         .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                         .OrderBy(e => e.Position)
-                        .ToList()[index - 1].Id;
+                        .ToList()[index - 1]
+                        .Id;
 
                     int currentId = dbContext
                         .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                         .OrderBy(e => e.Position)
-                        .ToList()[index].Id;
+                        .ToList()[index]
+                        .Id;
 
                     int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
 
@@ -203,13 +205,15 @@ namespace Kertu.InteractiveServer.Components.Layout
                         .Elements.Single(e => e.Id == element.ParentID)
                         .GetChildren()
                         .OrderBy(e => e.Position)
-                        .ToList()[index - 1].Id;
+                        .ToList()[index - 1]
+                        .Id;
 
                     int currentId = dbContext
                         .Elements.Single(e => e.Id == element.ParentID)
                         .GetChildren()
                         .OrderBy(e => e.Position)
-                        .ToList()[index].Id;
+                        .ToList()[index]
+                        .Id;
 
                     int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
 
@@ -221,12 +225,10 @@ namespace Kertu.InteractiveServer.Components.Layout
                 }
                 NavigationManager.Refresh(true);
             }
-
         }
 
         void MoveElementDown(Element element)
         {
-
             if (element.ParentID == null)
             {
                 int index = dbContext
@@ -235,23 +237,21 @@ namespace Kertu.InteractiveServer.Components.Layout
                     .ToList()
                     .IndexOf(element);
 
-                int count = dbContext
-                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
-                    .OrderBy(e => e.Position)
-                    .ToList()
-                    .Count();
+                int count = dbContext.Elements.Where(e => e.ApplicationUserId == _currentUser.Id).OrderBy(e => e.Position).ToList().Count();
 
                 if (index < count - 1)
                 {
                     int lowerId = dbContext
                         .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                         .OrderBy(e => e.Position)
-                        .ToList()[index + 1].Id;
+                        .ToList()[index + 1]
+                        .Id;
 
                     int currentId = dbContext
                         .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
                         .OrderBy(e => e.Position)
-                        .ToList()[index].Id;
+                        .ToList()[index]
+                        .Id;
 
                     int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
 
@@ -285,13 +285,15 @@ namespace Kertu.InteractiveServer.Components.Layout
                         .Elements.Single(e => e.Id == element.ParentID)
                         .GetChildren()
                         .OrderBy(e => e.Position)
-                        .ToList()[index + 1].Id;
+                        .ToList()[index + 1]
+                        .Id;
 
                     int currentId = dbContext
                         .Elements.Single(e => e.Id == element.ParentID)
                         .GetChildren()
                         .OrderBy(e => e.Position)
-                        .ToList()[index].Id;
+                        .ToList()[index]
+                        .Id;
 
                     int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
 
@@ -307,18 +309,20 @@ namespace Kertu.InteractiveServer.Components.Layout
 
         async Task MoveElementElsewhere(Element element)
         {
-            await DialogService.OpenAsync<ItemMover>($"Move...",
-               new Dictionary<string, object>() { { "ElementId", element.Id } },
-               new DialogOptions()
-               {
-                   Resizable = false,
-                   Draggable = false,
-                   CloseDialogOnOverlayClick = true,
-                   Width = "700px",
-                   Height =  "512px",
-                   Left = null,
-                   Top = null
-               });
+            await DialogService.OpenAsync<ItemMover>(
+                $"Move...",
+                new Dictionary<string, object>() { { "ElementId", element.Id } },
+                new DialogOptions()
+                {
+                    Resizable = false,
+                    Draggable = false,
+                    CloseDialogOnOverlayClick = true,
+                    Width = "700px",
+                    Height = "512px",
+                    Left = null,
+                    Top = null,
+                }
+            );
 
             await SaveStateAsync();
         }
@@ -518,6 +522,10 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 element = new Card();
             }
+            else if (type == typeof(TaskCard))
+            {
+                element = new TaskCard();
+            }
             else if (type == typeof(List))
             {
                 element = new List();
@@ -535,7 +543,7 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             if (parent == null)
             {
-                if(_currentUser.UserElements.Count > 0)
+                if (_currentUser.UserElements.Count > 0)
                 {
                     element.Position = _currentUser.UserElements.OrderBy(e => e.Position).Last().Position + 1;
                 }
@@ -546,7 +554,17 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 element.AddTo(parent);
             }
+
+            // Save changes before setting position
             dbContext.SaveChanges();
+
+            // Set position if needed and save again
+            if (parent != null && parent.GetChildren().Any())
+            {
+                element.Position = parent.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
+                dbContext.SaveChanges();
+            }
+
             UserStateService.SetLastOpenedElement(_currentUser.Id, element);
             NavigationManager.Refresh(true);
         }

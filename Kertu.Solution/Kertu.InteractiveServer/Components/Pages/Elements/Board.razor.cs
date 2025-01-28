@@ -1,5 +1,4 @@
 ﻿using Kertu.InteractiveServer.Data;
-using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -75,7 +74,5 @@ namespace Kertu.InteractiveServer.Components.Pages.Elements
             DbContext.SaveChanges();
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
-
-        private void CreateItem() { }
     }
 }
