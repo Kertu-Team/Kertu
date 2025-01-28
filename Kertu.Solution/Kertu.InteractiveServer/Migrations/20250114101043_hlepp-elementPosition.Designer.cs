@@ -3,6 +3,7 @@ using System;
 using Kertu.InteractiveServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kertu.InteractiveServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250114101043_hlepp-elementPosition")]
+    partial class hleppelementPosition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Kertu.InteractiveServer.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int?>("BoardID")
+                    b.Property<int?>("BoardId")
                         .HasColumnType("integer");
 
                     b.Property<string>("CardType")
@@ -107,9 +110,6 @@ namespace Kertu.InteractiveServer.Migrations
 
                     b.Property<string>("ElementType")
                         .HasColumnType("text");
-
-                    b.Property<int?>("ListID")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -128,7 +128,7 @@ namespace Kertu.InteractiveServer.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("BoardID");
+                    b.HasIndex("BoardId");
 
                     b.HasIndex("OwnerId");
 
@@ -286,7 +286,10 @@ namespace Kertu.InteractiveServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasIndex("ListID");
+                    b.Property<int?>("ListId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("ListId");
 
                     b.HasDiscriminator().HasValue("Card");
                 });
@@ -316,7 +319,7 @@ namespace Kertu.InteractiveServer.Migrations
 
                     b.HasOne("Kertu.InteractiveServer.Data.Models.Elements.Board", null)
                         .WithMany("Children")
-                        .HasForeignKey("BoardID");
+                        .HasForeignKey("BoardId");
 
                     b.HasOne("Kertu.InteractiveServer.Data.ApplicationUser", "Owner")
                         .WithMany()
@@ -382,7 +385,7 @@ namespace Kertu.InteractiveServer.Migrations
                 {
                     b.HasOne("Kertu.InteractiveServer.Data.Models.Elements.List", null)
                         .WithMany("Children")
-                        .HasForeignKey("ListID");
+                        .HasForeignKey("ListId");
                 });
 
             modelBuilder.Entity("Kertu.InteractiveServer.Data.ApplicationUser", b =>

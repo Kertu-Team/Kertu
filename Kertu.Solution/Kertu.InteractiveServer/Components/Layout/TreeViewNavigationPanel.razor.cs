@@ -1,9 +1,12 @@
-﻿using Kertu.InteractiveServer.Data;
+﻿using System.Text.Json;
+using Kertu.InteractiveServer.Data;
 using Kertu.InteractiveServer.Data.Models;
 using Kertu.InteractiveServer.Data.Models.Elements;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
 
@@ -36,7 +39,10 @@ namespace Kertu.InteractiveServer.Components.Layout
                 return;
             }
 
-            var elements = dbContext.Users.Include(u => u.UserElements).Single(u => u == _currentUser).UserElements;
+            var elements = dbContext
+                .Users.Include(u => u.UserElements)
+                .Single(u => u == _currentUser)
+                .UserElements.OrderBy(e => e.Position);
             foreach (var element in elements)
             {
                 TreeViewItem treeViewItem = new(element);
@@ -149,6 +155,185 @@ namespace Kertu.InteractiveServer.Components.Layout
             ContextMenuService.Open(args, items, action);
         }
 
+        void MoveElementUp(Element element)
+        {
+            if (element.ParentID == null)
+            {
+                int index = dbContext
+                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                if (index > 0)
+                {
+                    int higherId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index - 1]
+                        .Id;
+
+                    int currentId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index]
+                        .Id;
+
+                    int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+
+                    dbContext.SaveChanges();
+                }
+
+                NavigationManager.Refresh(true);
+            }
+            else
+            {
+                int index = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                if (index > 0)
+                {
+                    int higherId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index - 1]
+                        .Id;
+
+                    int currentId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index]
+                        .Id;
+
+                    int higher = dbContext.Elements.Single(e => e.Id == higherId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == higherId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = higher;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
+            }
+        }
+
+        void MoveElementDown(Element element)
+        {
+            if (element.ParentID == null)
+            {
+                int index = dbContext
+                    .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                int count = dbContext.Elements.Where(e => e.ApplicationUserId == _currentUser.Id).OrderBy(e => e.Position).ToList().Count();
+
+                if (index < count - 1)
+                {
+                    int lowerId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index + 1]
+                        .Id;
+
+                    int currentId = dbContext
+                        .Elements.Where(e => e.ApplicationUserId == _currentUser.Id)
+                        .OrderBy(e => e.Position)
+                        .ToList()[index]
+                        .Id;
+
+                    int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
+            }
+            else
+            {
+                int index = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .IndexOf(element);
+
+                int count = dbContext
+                    .Elements.Single(e => e.Id == element.ParentID)
+                    .GetChildren()
+                    .OrderBy(e => e.Position)
+                    .ToList()
+                    .Count();
+
+                if (index < count - 1)
+                {
+                    int lowerId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index + 1]
+                        .Id;
+
+                    int currentId = dbContext
+                        .Elements.Single(e => e.Id == element.ParentID)
+                        .GetChildren()
+                        .OrderBy(e => e.Position)
+                        .ToList()[index]
+                        .Id;
+
+                    int lower = dbContext.Elements.Single(e => e.Id == lowerId).Position;
+
+                    dbContext.Elements.Single(e => e.Id == lowerId).Position = element.Position;
+
+                    dbContext.Elements.Single(e => e.Id == currentId).Position = lower;
+
+                    dbContext.SaveChanges();
+                }
+                NavigationManager.Refresh(true);
+            }
+        }
+
+        async Task MoveElementElsewhere(Element element)
+        {
+            await DialogService.OpenAsync<ItemMover>(
+                $"Move...",
+                new Dictionary<string, object>() { { "ElementId", element.Id } },
+                new DialogOptions()
+                {
+                    Resizable = false,
+                    Draggable = false,
+                    CloseDialogOnOverlayClick = true,
+                    Width = "700px",
+                    Height = "512px",
+                    Left = null,
+                    Top = null,
+                }
+            );
+
+            await SaveStateAsync();
+        }
+
+        private async Task SaveStateAsync()
+        {
+            await Task.CompletedTask;
+
+            NavigationManager.Refresh(true);
+        }
+
         void TreeItemContextMenu(TreeItemContextMenuEventArgs args)
         {
             Action<MenuItemEventArgs> action = async (e) =>
@@ -174,6 +359,16 @@ namespace Kertu.InteractiveServer.Components.Layout
                     case 3:
                         await DeleteElement((args.Value as TreeViewItem).Element);
                         break;
+
+                    case 41:
+                        MoveElementUp((args.Value as TreeViewItem).Element);
+                        break;
+                    case 42:
+                        MoveElementDown((args.Value as TreeViewItem).Element);
+                        break;
+                    case 43:
+                        MoveElementElsewhere((args.Value as TreeViewItem).Element);
+                        break;
                 }
             };
 
@@ -195,6 +390,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Value = 3,
                         Icon = "delete_forever",
                     },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
+                    },
                 ];
             }
             else if ((args.Value as TreeViewItem).Element is List)
@@ -206,6 +420,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                         Text = "Add card",
                         Value = 11,
                         Icon = "post_add",
+                    },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
                     },
                     new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
@@ -247,6 +480,25 @@ namespace Kertu.InteractiveServer.Components.Layout
                     new ContextMenuItem() { Disabled = true },
                     new ContextMenuItem()
                     {
+                        Text = "Move Up",
+                        Value = 41,
+                        Icon = "arrow_upward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move Down",
+                        Value = 42,
+                        Icon = "arrow_downward",
+                    },
+                    new ContextMenuItem()
+                    {
+                        Text = "Move...",
+                        Value = 43,
+                        Icon = "arrow_outward",
+                    },
+                    new ContextMenuItem() { Disabled = true },
+                    new ContextMenuItem()
+                    {
                         Text = "Rename",
                         Value = 2,
                         Icon = "edit",
@@ -270,6 +522,10 @@ namespace Kertu.InteractiveServer.Components.Layout
             {
                 element = new Card();
             }
+            else if (type == typeof(TaskCard))
+            {
+                element = new TaskCard();
+            }
             else if (type == typeof(List))
             {
                 element = new List();
@@ -287,13 +543,28 @@ namespace Kertu.InteractiveServer.Components.Layout
 
             if (parent == null)
             {
+                if (_currentUser.UserElements.Count > 0)
+                {
+                    element.Position = _currentUser.UserElements.OrderBy(e => e.Position).Last().Position + 1;
+                }
+
                 _currentUser.UserElements.Add(element);
             }
             else
             {
                 element.AddTo(parent);
             }
+
+            // Save changes before setting position
             dbContext.SaveChanges();
+
+            // Set position if needed and save again
+            if (parent != null && parent.GetChildren().Any())
+            {
+                element.Position = parent.GetChildren().OrderBy(e => e.Position).Last().Position + 1;
+                dbContext.SaveChanges();
+            }
+
             UserStateService.SetLastOpenedElement(_currentUser.Id, element);
             NavigationManager.Refresh(true);
         }
@@ -343,6 +614,8 @@ namespace Kertu.InteractiveServer.Components.Layout
             dbContext.SaveChanges();
         }
 
+        Random random = new();
+
         private List<TreeViewItem> LoadTree(IQueryable<Element> parent)
         {
             List<TreeViewItem> treeViewItems = new();
@@ -350,18 +623,20 @@ namespace Kertu.InteractiveServer.Components.Layout
             if (parent.First() is List)
             {
                 var list = parent.Cast<List>();
-                children = list.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+                children = list.Include(kl => kl.Children).First().Children.Cast<Element>().OrderBy(e => e.Position).ToList();
             }
             else if (parent.First() is Board)
             {
                 var board = parent.Cast<Board>();
-                children = board.Include(kl => kl.Children).First().Children.Cast<Element>().ToList();
+                children = board.Include(kl => kl.Children).First().Children.Cast<Element>().OrderBy(e => e.Position).ToList();
             }
 
             foreach (var child in children)
             {
+                if (child.Position == 0)
+                    child.Position = children.OrderBy(e => e.Position).First().Position - 1;
                 TreeViewItem item = new(child);
-                var fromDB = dbContext.Elements.Where(ke => ke == child);
+                var fromDB = dbContext.Elements.Where(ke => ke == child).OrderBy(e => e.Position);
                 item.Children = LoadTree(fromDB);
                 treeViewItems.Add(item);
             }

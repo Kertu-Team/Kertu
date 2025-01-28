@@ -16,69 +16,98 @@
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Register</PageTitle>
-
-<div class="w-100 h-100 d-flex align-items-center">
-    <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
-        <div class="rz-login">
-            <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" class="rz-form">
-                <DataAnnotationsValidator />
-
-                <RadzenAlert Visible=@(!string.IsNullOrEmpty(Message)) AlertStyle="AlertStyle.Danger" ShowIcon="false" AllowClose="false" Variant="Variant.Flat" Shade="Shade.Lighter">
-                    @Message
-                </RadzenAlert>
-
-                <!-- Email Field -->
-                 <div class="rz-form-row">
-                    <label for="email" class="rz-label">Email</label>
-                    <div class="rz-form-input-wrapper">
-                        <InputText @bind-Value="Input.Email" class="rz-textbox" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                        <ValidationMessage For="() => Input.Email" class="text-danger" />
-                    </div>
-                </div>
-
-                <!-- Password Field -->
-                <div class="rz-form-row">
-                    <label for="password" class="rz-label">Password</label>
-                    <div class="rz-form-input-wrapper">
-                        <InputText type="password" @bind-Value="Input.Password" class="rz-textbox" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <ValidationMessage For="() => Input.Password" class="text-danger" />
-                    </div>
-                </div>
-
-                <!-- Confirm Password Field -->
-                <div class="rz-form-row">
-                    <label for="confirm-password" class="rz-label">Confirm Password</label>
-                    <div class="rz-form-input-wrapper">
-                        <InputText type="password" @bind-Value="Input.ConfirmPassword" class="rz-textbox" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-                    </div>
-                </div>
-
-                <!-- Register Button -->
-                <div class="rz-form-row">
-                    <div class="w-100 d-flex justify-content-center">
-                        <label class="rz-label"></label>
-                        <div class="rz-form-input-wrapper rz-login-buttons">
-                            <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Text="Register" />
-                        </div>
-                    </div>
-                </div>
-            </EditForm>
-
-            <!-- Already Have an Account Section -->
-            <div class="rz-register">
-                Already have an account?
-
-                <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
-                    <RadzenButton ButtonType="ButtonType.Button" Variant="Variant.Flat" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="Log in" />
-                </a>
-            </div>
-        </div>
-    </RadzenCard>
+<div class="area">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
 </div>
 
 
+<div class="container">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Create Your Account</h4>
+            <small>Please fill in the details</small>
+        </div>
+        <div class="card-body">
+            <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                <DataAnnotationsValidator />
 
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <div class="alert alert-danger text-center">
+                        @Message
+                    </div>
+                }
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" class="form-control" id="email" placeholder="Email" />
+                    <label for="email">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" id="password" placeholder="Password" />
+                    <label for="password">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" id="confirm-password" placeholder="Confirm Password" />
+                    <label for="confirm-password">Confirm Password</label>
+                    <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </EditForm>
+        </div>
+        <div class="card-footer text-center bg-light">
+            <span>Already have an account?</span>
+            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" class="btn btn-link text-primary">
+                Log in
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .container {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 600px;
+    }
+
+    .custom-left-align {
+        margin-left: 0px;
+    }
+
+    .register-background {
+        color: #533; /* Adjust text color for contrast */
+    }
+
+    .card {
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0;
+    }
+</style>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -169,3 +198,4 @@
         public string ConfirmPassword { get; set; } = "";
     }
 }
+<link rel="stylesheet" href="backgroundforlogin.css">

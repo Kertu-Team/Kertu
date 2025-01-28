@@ -10,13 +10,15 @@
 @inject ContextMenuService ContextMenuService
 @inject DialogService DialogService
 @inject Services.UserStateService UserStateService
+@inject IJSRuntime JSRuntime
 
 <div style="display: flex;
             flex-direction: column;
             height: 100%;">
     <RadzenStack class="rz-m-3">
         <RadzenTree Data="@_treeViewItems" @ref=_tree Change="OnChange" @bind-Value=@_selection ItemContextMenu="TreeItemContextMenu">
-            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true) Expanded="@ShouldExpand">
+            <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Children" HasChildren=@(i => ((TreeViewItem)i).Children.Any() == true)
+                Expanded="@ShouldExpand">
                 <Template Context="context">
                     <RadzenIcon Icon=@((context.Value as TreeViewItem).GetIcon()) />
                     <b style="user-select: none;">@context.Text</b>
@@ -26,9 +28,7 @@
         </RadzenTree>
     </RadzenStack>
 
-    <div @oncontextmenu=@(args => NavigationPanelContextMenu(args))
-        @oncontextmenu:preventDefault="true"
-        style="flex: 1 1 auto;">
+    <div @oncontextmenu=@(args => NavigationPanelContextMenu(args)) @oncontextmenu:preventDefault="true" style="flex: 1 1 auto;">
     </div>
 </div>
 @code {
@@ -39,14 +39,15 @@
         var result = await DialogService.OpenAsync("Rename element", d =>
     @<RadzenStack Gap="1.5rem">
         <RadzenTextBox @bind-Value="element.Name" />
-        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center"
+            JustifyContent="JustifyContent.SpaceBetween">
             <RadzenStack Orientation="Orientation.Horizontal">
                 <RadzenButton Text="Ok" Click="() => {dbContext.SaveChanges(); d.Close(null);}" Style="width: 80px;" />
                 <RadzenButton Text="Cancel" Click="() => d.Close(null)" ButtonStyle="ButtonStyle.Light" />
             </RadzenStack>
         </RadzenStack>
     </RadzenStack>
-        );
+            );
     }
 
     private async Task AddElementDialog(Element parent, Type type)
@@ -57,19 +58,29 @@
         else if (type == typeof(Board)) title += "Board";
 
         string name = $"New {title}";
+        string selectedType = "Card";
 
         var result = await DialogService.OpenAsync($"Add new {title}", d =>
     @<RadzenStack Gap="1.5rem">
         <RadzenTextBox @bind-Value="name" />
+        @if (type == typeof(Card))
+        {
+            <RadzenDropDown @bind-Value=@selectedType Data=@(new[] { "Card", "TaskCard" }) />
+        }
         <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
             <RadzenStack Orientation="Orientation.Horizontal">
-                <RadzenButton Text="Ok" Click="() => {AddElement(parent, type, name); d.Close(null);}" Style="width: 80px;" />
+                <RadzenButton Text="Ok" Click="() => HandleAddElement(parent, type, name, selectedType, d)" Style="width: 80px;" />
                 <RadzenButton Text="Cancel" Click="() => d.Close(null)" ButtonStyle="ButtonStyle.Light" />
             </RadzenStack>
         </RadzenStack>
     </RadzenStack>
-    );
+        );
+    }
 
+    private void HandleAddElement(Element parent, Type type, string name, string selectedType, DialogService d)
+    {
+        AddElement(parent, selectedType == "TaskCard" ? typeof(TaskCard) : type, name);
+        d.Close(null);
     }
     #endregion
 }

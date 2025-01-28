@@ -86,11 +86,16 @@
 		</RadzenSidebar>
 	}
 
-	<RadzenBody>
+	<RadzenBody class="@(IsHomePage ? "home-background" : "")">
 		<div class="rz-p-4 h-100">
 			@Body
 		</div>
 	</RadzenBody>
+
+	@code {
+		private bool IsHomePage => NavigationManager.Uri.EndsWith("/", StringComparison.OrdinalIgnoreCase);
+	}
+
 </RadzenLayout>
 <div id="blazor-error-ui">
 	An unhandled error has occurred.

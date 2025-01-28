@@ -8,9 +8,16 @@ namespace Kertu.InteractiveServer.Data.Models
     public class TreeViewItem(Element element)
     {
         public Element Element { get; set; } = element;
+
         public List<TreeViewItem> Children { get; set; } = [];
 
-        public string Name { get => Element.Name; set => Element.Name = value; }
+        public string Name
+        {
+            get => Element != null ? Element.Name : specialName;
+            set { if(Element != null) Element.Name = value; specialName = value; } 
+        }
+
+        string specialName;
 
         public string GetIcon()
         {
@@ -26,6 +33,11 @@ namespace Kertu.InteractiveServer.Data.Models
             {
                 return "space_dashboard";
             }
+            else if (Element == null)
+            {
+                return "account_circle";
+            }
+
             return "question_mark";
         }
     }

@@ -18,7 +18,7 @@
                 string lastPage = await LocalStorage.GetItemAsync<string>("LastPage") ?? string.Empty;
                 if (!string.IsNullOrEmpty(lastPage) && lastPage != Navigation.Uri)
                 {
-                    Navigation.NavigateTo(lastPage);
+                    //Navigation.NavigateTo(lastPage);
                     await SessionStorage.SetItemAsync("NavigatedToRecent", true);
                 }
                 else
